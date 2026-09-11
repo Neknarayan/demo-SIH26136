@@ -1,4 +1,5 @@
-from sqlalchemy import Integer, String
+from datetime import datetime
+from sqlalchemy import Integer, String, DateTime, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import Base
 
@@ -9,6 +10,12 @@ class User(Base):
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     role: Mapped[str] = mapped_column(String(50), nullable=False)  # officer, startup, evaluator
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True, nullable=False)
+
+    # Auth columns — nullable so existing seeded demo users (no password) still work
+    hashed_password: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
 
     # Relationships
     startup = relationship("Startup", back_populates="user", uselist=False)

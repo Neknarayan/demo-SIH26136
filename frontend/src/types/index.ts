@@ -1,5 +1,34 @@
 export type Role = 'officer' | 'startup' | 'evaluator';
 
+// ── Auth types ────────────────────────────────────────────────────────────────
+export interface AuthUser {
+  id: number;
+  name: string;
+  role: Role;
+  email: string;
+  created_at?: string;
+}
+
+export interface TokenResponse {
+  access_token: string;
+  token_type: string;
+  user: AuthUser;
+}
+
+export interface LoginPayload {
+  email: string;
+  password: string;
+}
+
+export interface RegisterPayload {
+  name: string;
+  email: string;
+  password: string;
+  role: 'startup' | 'gov_officer';
+}
+
+
+
 export interface User {
   id: number;
   name: string;

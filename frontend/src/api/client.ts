@@ -1,5 +1,9 @@
 import type {
   User,
+  AuthUser,
+  TokenResponse,
+  LoginPayload,
+  RegisterPayload,
   Startup,
   Challenge,
   Application,
@@ -16,6 +20,21 @@ const API_BASE = 'http://127.0.0.1:8000';
 
 class ApiClient {
   private currentUserId: number | null = null;
+  private jwtToken: string | null = localStorage.getItem('sih_jwt_token');
+
+  // ── JWT token management ────────────────────────────────────────────────────
+  setToken(token: string | null) {
+    this.jwtToken = token;
+    if (token) {
+      localStorage.setItem('sih_jwt_token', token);
+    } else {
+      localStorage.removeItem('sih_jwt_token');
+    }
+  }
+
+  getToken(): string | null {
+    return this.jwtToken;
+  }
 
   setUserId(id: number | null) {
     this.currentUserId = id;
@@ -66,6 +85,44 @@ class ApiClient {
     return response.json();
   }
 
+  // ── Auth endpoints ──────────────────────────────────────────────────────────
+  async authRegister(payload: RegisterPayload): Promise<TokenResponse> {
+    const res = await fetch(`${API_BASE}/api/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error((err as { detail?: string }).detail || 'Registration failed');
+    }
+    return res.json() as Promise<TokenResponse>;
+  }
+
+  async authLogin(payload: LoginPayload): Promise<TokenResponse> {
+    const res = await fetch(`${API_BASE}/api/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error((err as { detail?: string }).detail || 'Login failed');
+    }
+    return res.json() as Promise<TokenResponse>;
+  }
+
+  async authMe(): Promise<AuthUser> {
+    const res = await fetch(`${API_BASE}/api/auth/me`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(this.jwtToken ? { Authorization: `Bearer ${this.jwtToken}` } : {}),
+      },
+    });
+    if (!res.ok) throw new Error('Not authenticated');
+    return res.json() as Promise<AuthUser>;
+  }
+
   // Users
   getUsers(): Promise<User[]> {
     return this.request<User[]>('/users');
@@ -74,6 +131,7 @@ class ApiClient {
   getUser(id: number): Promise<User> {
     return this.request<User>(`/users/${id}`);
   }
+
 
   // Challenges
   getChallenges(): Promise<Challenge[]> {

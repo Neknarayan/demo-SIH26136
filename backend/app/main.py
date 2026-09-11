@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
+from app.api.auth import router as auth_router
 from app.api.users import router as users_router
 from app.api.startups import router as startups_router
 from app.api.challenges import router as challenges_router
@@ -27,6 +28,7 @@ app.add_middleware(
 )
 
 # Mount Routers
+app.include_router(auth_router)
 app.include_router(users_router)
 app.include_router(startups_router)
 app.include_router(challenges_router)
