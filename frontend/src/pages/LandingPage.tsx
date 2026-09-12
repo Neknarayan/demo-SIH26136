@@ -15,7 +15,7 @@ import {
   UserCircle2,
 } from 'lucide-react';
 import logoImg from '../assets/maharastraGov.jpeg';
-import heroImg from '../assets/ashokaPillars.png';
+import heroImg from '../assets/gov3.jpeg';
 import { Footer } from '../components/Footer';
 import { HeroBannerSlider } from '../components/landing/HeroBannerSlider';
 import { ActiveProblemStatements } from '../components/landing/ActiveProblemStatements';
@@ -44,6 +44,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
 
   return (
     <div className="landing-page">
+      {/* ── Notice Ticker (very top — before navbar) ──────────────────────────
+           Official gazette releases, deadline extensions, policy updates. */}
+      <NoticeTicker />
+
       {/* ── Navbar ─────────────────────────────────────────────────────────── */}
       <nav className="landing-nav">
         <div className="landing-nav-inner">
@@ -105,13 +109,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
         </div>
       </section>
 
-      {/* ── Notice Ticker ────────────────────────────────────────────────────
-           Official circulars, gazette releases, deadline extensions.
-           Renders as a thin dark bar immediately below the Hero. */}
-      <NoticeTicker />
-
       {/* ── Hero Banner Slider ────────────────────────────────────────────────
-           3-slide initiative carousel auto-plays every 5s; pauses on hover. */}
+           3-slide initiative carousel using gov1/gov2/gov3 images. */}
       <HeroBannerSlider autoPlayInterval={5000} />
 
       {/* ── Active Problem Statements ─────────────────────────────────────────

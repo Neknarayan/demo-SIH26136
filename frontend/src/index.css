@@ -1909,20 +1909,20 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center;
+  object-position: center top;
   display: block;
-  /* Placeholder tint shown when image is missing */
-  background: linear-gradient(135deg, #1e3a5f 0%, #0b0f14 100%);
+  /* No background tint — let the real image show fully */
 }
 
 .hbs-overlay {
   position: absolute;
   inset: 0;
+  /* Light gradient only on left for text readability — right side stays clear */
   background: linear-gradient(
     90deg,
-    rgba(11,15,20,0.80) 0%,
-    rgba(11,15,20,0.55) 55%,
-    rgba(11,15,20,0.20) 100%
+    rgba(11,15,20,0.60) 0%,
+    rgba(11,15,20,0.30) 45%,
+    rgba(11,15,20,0.05) 100%
   );
 }
 
@@ -2286,8 +2286,8 @@ body {
 
 .pmt-logo-wrap {
   position: relative;
-  width: 52px;
-  height: 52px;
+  width: 60px;
+  height: 60px;
   flex-shrink: 0;
   border-radius: 12px;
   overflow: hidden;
@@ -2302,13 +2302,16 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center top;
+  /* Hide if image 404s — fallback letter shows through */
 }
 
 .pmt-logo-fallback {
   position: absolute;
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 800;
   color: #2563eb;
+  /* Only visible when img fails to load */
 }
 
 .pmt-card-info {
@@ -2491,7 +2494,8 @@ body {
   align-items: stretch;
   overflow: hidden;
   position: relative;
-  height: 40px;
+  height: 44px;         /* slightly taller for readability */
+  z-index: 10;
 }
 
 /* Left label */
@@ -2521,8 +2525,10 @@ body {
 .ntk-track {
   display: flex;
   align-items: center;
+  /* CRITICAL: prevent any wrapping of the ticker items */
   white-space: nowrap;
-  animation: ntk-scroll 55s linear infinite;
+  flex-wrap: nowrap;
+  animation: ntk-scroll 60s linear infinite;
   will-change: transform;
 }
 .ntk-track--paused {
@@ -2539,7 +2545,10 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 0 20px;
+  padding: 0 24px;
+  /* Never allow items to wrap */
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .ntk-label {
@@ -2553,6 +2562,7 @@ body {
   padding: 2px 8px;
   border-radius: 20px;
   flex-shrink: 0;
+  white-space: nowrap;
 }
 .ntk-label--gazette  { background: #1e40af; color: #bfdbfe; }
 .ntk-label--deadline { background: #7c2d12; color: #fed7aa; }
@@ -2562,7 +2572,9 @@ body {
 .ntk-text {
   font-size: 12.5px;
   color: #cbd5e1;
-  max-width: 500px;
+  /* Key fix: no max-width, no wrapping */
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .ntk-link {
@@ -2571,13 +2583,15 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  white-space: nowrap;
 }
 .ntk-link:hover { color: #fff; text-decoration: underline; }
 
 .ntk-date {
   font-size: 11px;
-  color: #475569;
+  color: #64748b;
   flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .ntk-sep {
@@ -2596,4 +2610,5 @@ body {
   background: #0f172a;
   padding: 2px 8px;
   z-index: 2;
-}
+}
+
