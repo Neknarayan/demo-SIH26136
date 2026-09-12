@@ -2,7 +2,7 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict, EmailStr
 from typing import Literal, Optional
 
-# ── Existing response schema (extended with created_at) ──────────────────────
+# ── Existing response schema ──────────────────────────────────────────────────
 class UserBase(BaseModel):
     name: str
     role: str
@@ -15,11 +15,33 @@ class UserResponse(UserBase):
     model_config = ConfigDict(from_attributes=True)
 
 # ── Auth-specific schemas ─────────────────────────────────────────────────────
+
+class StartupProfile(BaseModel):
+    """Extra fields collected during startup registration."""
+    sector: str
+    dpiit_status: bool = False
+    profile_text: str
+
+class OfficerProfile(BaseModel):
+    """Extra fields for government officer registration."""
+    department: Optional[str] = None
+    designation: Optional[str] = None
+
+class EvaluatorProfile(BaseModel):
+    """Extra fields for evaluator registration."""
+    expertise: Optional[str] = None
+
 class UserRegister(BaseModel):
     name: str
     email: EmailStr
     password: str
-    role: Literal["startup", "gov_officer"]
+    role: Literal["startup", "gov_officer", "evaluator"]
+
+    # Role-specific sub-profiles (each optional at schema level;
+    # validated programmatically per role in the endpoint)
+    startup_profile: Optional[StartupProfile] = None
+    officer_profile: Optional[OfficerProfile] = None
+    evaluator_profile: Optional[EvaluatorProfile] = None
 
 class UserLogin(BaseModel):
     email: EmailStr
@@ -29,3 +51,5 @@ class TokenResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
     user: UserResponse
+    # Forward-declared; filled on startup registration
+    startup: Optional[dict] = None
