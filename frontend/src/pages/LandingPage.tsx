@@ -17,6 +17,11 @@ import {
 import logoImg from '../assets/maharastraGov.jpeg';
 import heroImg from '../assets/ashokaPillars.png';
 import { Footer } from '../components/Footer';
+import { HeroBannerSlider } from '../components/landing/HeroBannerSlider';
+import { ActiveProblemStatements } from '../components/landing/ActiveProblemStatements';
+import { PilotMilestoneTracker } from '../components/landing/PilotMilestoneTracker';
+import { NoticeTicker } from '../components/landing/NoticeTicker';
+
 
 interface LandingPageProps {
   onNavigate: (page: 'login' | 'register') => void;
@@ -99,6 +104,23 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
           </div>
         </div>
       </section>
+
+      {/* ── Notice Ticker ────────────────────────────────────────────────────
+           Official circulars, gazette releases, deadline extensions.
+           Renders as a thin dark bar immediately below the Hero. */}
+      <NoticeTicker />
+
+      {/* ── Hero Banner Slider ────────────────────────────────────────────────
+           3-slide initiative carousel auto-plays every 5s; pauses on hover. */}
+      <HeroBannerSlider autoPlayInterval={5000} />
+
+      {/* ── Active Problem Statements ─────────────────────────────────────────
+           Filterable live RFP/challenge feed with deadline countdowns. */}
+      <ActiveProblemStatements onApply={() => onNavigate('login')} />
+
+      {/* ── Pilot Milestone Tracker ───────────────────────────────────────────
+           Procurement transparency: real startup progress through 4 stages. */}
+      <PilotMilestoneTracker />
 
       {/* ── Innovation Procurement Lifecycle ───────────────────────────────── */}
       <section id="lifecycle" className="landing-lifecycle">
