@@ -1788,7 +1788,8 @@ body {
 ═══════════════════════════════════════════════════════════════════════════ */
 .hbs-root {
   width: 100%;
-  background: #0b0f14;
+  /* Bright, colorful gradient background */
+  background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 50%, #f3e8ff 100%);
   user-select: none;
   display: flex;
   justify-content: center;
@@ -1821,18 +1822,21 @@ body {
 }
 
 .hbs-image-col {
-  flex: 1;
+  flex: 1.25;
   position: relative;
-  height: 480px;
+  /* Fixed height so all images have identical container size */
+  height: 480px; 
   width: 100%;
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.08); /* Lighter shadow for bright theme */
+  background: #ffffff; /* White background so contained images look seamless */
 }
 
 @media (max-width: 900px) {
   .hbs-image-col {
-    height: 320px;
+    height: 360px;
+    flex: 1;
   }
 }
 
@@ -1841,14 +1845,17 @@ body {
   position: absolute;
   inset: 0;
   transition: opacity 0.35s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .hbs-bg--fade { opacity: 0; }
 
 .hbs-bg-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center top;
+  object-fit: contain; /* Ensures images are not cut and fit properly */
+  object-position: center;
   display: block;
 }
 
@@ -1863,7 +1870,7 @@ body {
 
 .hbs-tag {
   display: inline-block;
-  background: #d97706;
+  background: #2563eb; /* More vibrant blue for bright theme */
   color: #fff;
   font-size: 11px;
   font-weight: 700;
@@ -1875,19 +1882,19 @@ body {
 }
 
 .hbs-title {
-  color: #f8fafc;
-  font-size: clamp(22px, 3.5vw, 36px);
+  color: #0f172a; /* Dark text for bright background */
+  font-size: clamp(28px, 3.8vw, 42px);
   font-weight: 800;
-  line-height: 1.18;
-  margin-bottom: 14px;
-  letter-spacing: -0.01em;
+  line-height: 1.15;
+  margin-bottom: 16px;
+  letter-spacing: -0.02em;
 }
 
 .hbs-desc {
-  color: #cbd5e1;
-  font-size: 14.5px;
+  color: #475569; /* Dark gray text for bright background */
+  font-size: 16px;
   line-height: 1.65;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
   max-width: 480px;
 }
 
@@ -1914,8 +1921,8 @@ body {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(255,255,255,0.12);
-  border: 1.5px solid rgba(255,255,255,0.22);
+  background: rgba(0,0,0,0.4);
+  border: none;
   color: #fff;
   width: 42px;
   height: 42px;
@@ -1927,9 +1934,9 @@ body {
   transition: background 0.2s;
   z-index: 2;
 }
-.hbs-arrow:hover { background: rgba(255,255,255,0.28); }
-.hbs-arrow--prev { left: 18px; }
-.hbs-arrow--next { right: 18px; }
+.hbs-arrow:hover { background: rgba(0,0,0,0.6); }
+.hbs-arrow--prev { left: 16px; }
+.hbs-arrow--next { right: 16px; }
 
 /* Dots */
 .hbs-dots {
@@ -1944,14 +1951,14 @@ body {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.35);
+  background: rgba(0,0,0,0.25);
   border: none;
   cursor: pointer;
   transition: background 0.2s, transform 0.2s;
   padding: 0;
 }
 .hbs-dot--active {
-  background: #fff;
+  background: #0f172a;
   transform: scale(1.25);
 }
 
@@ -1960,11 +1967,12 @@ body {
   position: absolute;
   top: 14px;
   right: 18px;
-  background: rgba(0,0,0,0.45);
-  color: #e2e8f0;
+  background: rgba(0,0,0,0.5);
+  color: #fff;
   font-size: 11px;
-  padding: 4px 10px;
-  border-radius: 20px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
   z-index: 2;
 }
 
