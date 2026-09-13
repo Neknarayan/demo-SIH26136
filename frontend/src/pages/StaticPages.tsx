@@ -438,8 +438,8 @@ export const UserManualPage: React.FC<StaticPageProps> = ({ onNavigate }) => {
 
 export const AboutUsPage: React.FC<StaticPageProps> = ({ onNavigate }) => {
   const teamMembers = [
-    { name: 'Siddharth Pandey', role: 'Frontend + backend', color: '#8b5cf6', img: siddharthImg },
-    { name: 'Rishab jat', role: 'Team leader', color: '#10b981', img: rishabImg, imgPos: 'center 15%' },
+    { name: 'Siddharth Pandey', role: 'Frontend + backend', color: '#8b5cf6', img: siddharthImg, imgScale: 'scale(1.25)', imgPos: 'center top' },
+    { name: 'Rishab jat', role: 'Team leader', color: '#10b981', img: rishabImg, imgPos: 'center 25%' },
     { name: 'Neknarayan', role: 'Backend Developer and Visual artist', color: '#3b82f6', img: nekImg },
     { name: 'Suraj Chaurasiya', role: 'frontend', color: '#ef4444', img: surajImg },
     { name: 'Prawin Kumar', role: 'Ai/Ml + model traning', color: '#06b6d4', img: prawinImg },
@@ -481,18 +481,29 @@ export const AboutUsPage: React.FC<StaticPageProps> = ({ onNavigate }) => {
                 padding: "4px",
                 background: `linear-gradient(135deg, ${member.color}, ${member.color}80)`,
               }}>
-                <img 
-                  src={member.img} 
-                  alt={member.name} 
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                    objectPosition: member.imgPos || "top",
-                    borderRadius: "50%",
-                    border: "4px solid #fff"
-                  }} 
-                />
+                <div style={{
+                  width: "100%",
+                  height: "100%",
+                  borderRadius: "50%",
+                  border: "4px solid #fff",
+                  overflow: "hidden",
+                  backgroundColor: "#fff",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center"
+                }}>
+                  <img 
+                    src={member.img} 
+                    alt={member.name} 
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      objectPosition: member.imgPos || "top",
+                      transform: member.imgScale || "scale(1)",
+                    }} 
+                  />
+                </div>
               </div>
               <h4 style={{ margin: "0 0 0.5rem 0", fontSize: "1.35rem", color: member.color, fontWeight: "800" }}>{member.name}</h4>
               <p style={{ margin: 0, color: "#1e293b", fontSize: "1rem", fontWeight: "700" }}>{member.role}</p>
