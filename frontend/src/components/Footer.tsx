@@ -109,24 +109,24 @@ export const Footer: React.FC = () => {
             <h4 className="gov-footer-heading">Related Portals</h4>
             <ul className="gov-footer-list">
               <li>
-                <span className="gov-footer-link gov-footer-external-link">
+                <a href="https://maharashtra.gov.in/" target="_blank" rel="noopener noreferrer" className="gov-footer-link gov-footer-external-link">
                   Maharashtra State Portal <ExternalLink size={11} />
-                </span>
+                </a>
               </li>
               <li>
-                <span className="gov-footer-link gov-footer-external-link">
+                <a href="https://gem.gov.in/" target="_blank" rel="noopener noreferrer" className="gov-footer-link gov-footer-external-link">
                   GeM (Government e-Marketplace) <ExternalLink size={11} />
-                </span>
+                </a>
               </li>
               <li>
-                <span className="gov-footer-link gov-footer-external-link">
+                <a href="https://www.startupindia.gov.in/content/sih/en/state-startup-policies/Maharashtra-state-policy.html" target="_blank" rel="noopener noreferrer" className="gov-footer-link gov-footer-external-link">
                   Startup Maharashtra <ExternalLink size={11} />
-                </span>
+                </a>
               </li>
               <li>
-                <span className="gov-footer-link gov-footer-external-link">
-                  Digital India <ExternalLink size={11} />
-                </span>
+                <a href="https://www.dpiit.gov.in/" target="_blank" rel="noopener noreferrer" className="gov-footer-link gov-footer-external-link">
+                  DPIIT <ExternalLink size={11} />
+                </a>
               </li>
             </ul>
           </div>
