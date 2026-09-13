@@ -438,75 +438,135 @@ export const UserManualPage: React.FC<StaticPageProps> = ({ onNavigate }) => {
 
 export const AboutUsPage: React.FC<StaticPageProps> = ({ onNavigate }) => {
   const teamMembers = [
-    { name: 'Siddharth Pandey', role: 'Frontend + backend', color: '#8b5cf6', img: siddharthImg, imgScale: 'scale(1.25)', imgPos: 'center top' },
-    { name: 'Rishab jat', role: 'Team leader', color: '#10b981', img: rishabImg, imgPos: 'center 25%' },
-    { name: 'Neknarayan', role: 'Backend Developer and Visual artist', color: '#3b82f6', img: nekImg },
-    { name: 'Suraj Chaurasiya', role: 'frontend', color: '#ef4444', img: surajImg },
-    { name: 'Prawin Kumar', role: 'Ai/Ml + model traning', color: '#06b6d4', img: prawinImg },
-    { name: 'Vidhi Jain', role: 'Ml & Corporate Responsibility', color: '#d946ef', img: vidhiImg },
+    {
+      name: "Siddharth Pandey",
+      role: "Frontend & backend",
+      color: "#713bf0",
+      img: siddharthImg,
+      imgScale: "scale(1.25) translateY(-20%)",
+      imgPos: "center top",
+    },
+    {
+      name: "Rishab jat",
+      role: "Team leader",
+      color: "#10b981",
+      img: rishabImg,
+      imgPos: "center 25%",
+    },
+    {
+      name: "Neknarayan",
+      role: "Backend Developer & Visual artist",
+      color: "#3b82f6",
+      img: nekImg,
+    },
+    {
+      name: "Suraj Chaurasiya",
+      role: "frontend",
+      color: "#e92929",
+      img: surajImg,
+    },
+    {
+      name: "Prawin Kumar",
+      role: "Ai/Ml & model traning",
+      color: "#06b6d4",
+      img: prawinImg,
+    },
+    {
+      name: "Vidhi Jain",
+      role: "Ml & Corporate Responsibility",
+      color: "#c61ae0",
+      img: vidhiImg,
+    },
   ];
 
   return (
     <StaticLayout title="About Us" onNavigate={onNavigate}>
-      
       <SectionCard title="Team Members">
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-          gap: "2rem"
-        }}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+            gap: "2rem",
+          }}
+        >
           {teamMembers.map((member, idx) => (
-            <div key={idx} style={{
-              backgroundColor: "#fff",
-              borderRadius: "12px",
-              padding: "1.5rem",
-              textAlign: "center",
-              boxShadow: `0 10px 25px -5px ${member.color}40, 0 8px 10px -6px ${member.color}40`,
-              border: `1px solid ${member.color}30`,
-              transition: "transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = "translateY(-5px)";
-              e.currentTarget.style.boxShadow = `0 20px 25px -5px ${member.color}60, 0 10px 10px -5px ${member.color}50`;
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = "none";
-              e.currentTarget.style.boxShadow = `0 10px 25px -5px ${member.color}40, 0 8px 10px -6px ${member.color}40`;
-            }}>
-              <div style={{
-                width: "160px",
-                height: "160px",
-                margin: "0 auto 1.25rem auto",
-                borderRadius: "50%",
-                padding: "4px",
-                background: `linear-gradient(135deg, ${member.color}, ${member.color}80)`,
-              }}>
-                <div style={{
-                  width: "100%",
-                  height: "100%",
+            <div
+              key={idx}
+              style={{
+                backgroundColor: "#fff",
+                borderRadius: "12px",
+                padding: "1.5rem",
+                textAlign: "center",
+                boxShadow: `0 10px 25px -5px ${member.color}40, 0 8px 10px -6px ${member.color}40`,
+                border: `1px solid ${member.color}30`,
+                transition:
+                  "transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-5px)";
+                e.currentTarget.style.boxShadow = `0 20px 25px -5px ${member.color}60, 0 10px 10px -5px ${member.color}50`;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "none";
+                e.currentTarget.style.boxShadow = `0 10px 25px -5px ${member.color}40, 0 8px 10px -6px ${member.color}40`;
+              }}
+            >
+              <div
+                style={{
+                  width: "160px",
+                  height: "160px",
+                  margin: "0 auto 1.25rem auto",
                   borderRadius: "50%",
-                  border: "4px solid #fff",
-                  overflow: "hidden",
-                  backgroundColor: "#fff",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center"
-                }}>
-                  <img 
-                    src={member.img} 
-                    alt={member.name} 
+                  padding: "4px",
+                  background: `linear-gradient(135deg, ${member.color}, ${member.color}80)`,
+                }}
+              >
+                <div
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    borderRadius: "50%",
+                    border: "4px solid #fff",
+                    overflow: "hidden",
+                    backgroundColor: "#fff",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <img
+                    src={member.img}
+                    alt={member.name}
                     style={{
                       width: "100%",
                       height: "100%",
                       objectFit: "cover",
                       objectPosition: member.imgPos || "top",
                       transform: member.imgScale || "scale(1)",
-                    }} 
+                    }}
                   />
                 </div>
               </div>
-              <h4 style={{ margin: "0 0 0.5rem 0", fontSize: "1.35rem", color: member.color, fontWeight: "800" }}>{member.name}</h4>
-              <p style={{ margin: 0, color: "#1e293b", fontSize: "1rem", fontWeight: "700" }}>{member.role}</p>
+              <h4
+                style={{
+                  margin: "0 0 0.5rem 0",
+                  fontSize: "1.35rem",
+                  color: member.color,
+                  fontWeight: "800",
+                }}
+              >
+                {member.name}
+              </h4>
+              <p
+                style={{
+                  margin: 0,
+                  color: "#1e293b",
+                  fontSize: "1rem",
+                  fontWeight: "700",
+                }}
+              >
+                {member.role}
+              </p>
             </div>
           ))}
         </div>
