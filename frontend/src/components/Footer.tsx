@@ -1,7 +1,11 @@
 import React from "react";
 import { ExternalLink } from "lucide-react";
 import logoImg from "../assets/maharastraGov.jpeg";
-export const Footer: React.FC = () => {
+interface FooterProps {
+  onNavigate?: (page: 'landing' | 'faq' | 'terms' | 'privacy') => void;
+}
+
+export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
   return (
     <footer className="gov-footer">
       <div className="gov-footer-top">
@@ -67,13 +71,13 @@ export const Footer: React.FC = () => {
                 <span className="gov-footer-link">User Manual</span>
               </li>
               <li>
-                <span className="gov-footer-link">FAQs</span>
+                <button type="button" className="gov-footer-link" onClick={() => onNavigate?.('faq')} style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', cursor: 'pointer' }}>FAQs</button>
               </li>
               <li>
-                <span className="gov-footer-link">Terms & Conditions</span>
+                <button type="button" className="gov-footer-link" onClick={() => onNavigate?.('terms')} style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', cursor: 'pointer' }}>Terms & Conditions</button>
               </li>
               <li>
-                <span className="gov-footer-link">Privacy Policy</span>
+                <button type="button" className="gov-footer-link" onClick={() => onNavigate?.('privacy')} style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', cursor: 'pointer' }}>Privacy Policy</button>
               </li>
             </ul>
           </div>

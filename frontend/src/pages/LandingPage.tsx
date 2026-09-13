@@ -22,7 +22,7 @@ import { NoticeTicker } from '../components/landing/NoticeTicker';
 
 
 interface LandingPageProps {
-  onNavigate: (page: 'login' | 'register') => void;
+  onNavigate: (page: any) => void;
 }
 
 const LIFECYCLE_STEPS = [
@@ -207,7 +207,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
         </div>
       </section>
 
-      <Footer />
+      <Footer onNavigate={onNavigate} />
     </div>
   );
 };

@@ -1,0 +1,154 @@
+import React, { useEffect } from 'react';
+import { UserCircle2 } from 'lucide-react';
+import { Footer } from '../components/Footer';
+import { NoticeTicker } from '../components/landing/NoticeTicker';
+import logoImg from '../assets/maharastraGov.jpeg';
+
+interface StaticPageProps {
+  onNavigate: (page: 'landing' | 'login' | 'register' | 'faq' | 'terms' | 'privacy') => void;
+}
+
+const StaticLayout: React.FC<{ title: string; children: React.ReactNode; onNavigate: any }> = ({ title, children, onNavigate }) => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  const handleNavToLanding = (e: React.MouseEvent, sectionId?: string) => {
+    e.preventDefault();
+    onNavigate('landing');
+    if (sectionId) {
+      setTimeout(() => {
+        const el = document.getElementById(sectionId);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    }
+  };
+
+  return (
+    <div className="landing-page" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#f8fafc' }}>
+      <NoticeTicker />
+      
+      <nav className="landing-nav">
+        <div className="landing-nav-inner">
+          <div className="landing-nav-logo" style={{ cursor: 'pointer' }} onClick={(e) => handleNavToLanding(e)}>
+            <img src={logoImg} alt="GoM Seal" className="landing-nav-emblem" />
+            <div className="landing-nav-brand-text">
+              <span className="landing-nav-brand-title">GoM Procurement Portal</span>
+              <span className="landing-nav-brand-sub">Government of Maharashtra</span>
+            </div>
+          </div>
+
+          <ul className="landing-nav-links">
+            <li><a href="#home" className="landing-nav-link" onClick={(e) => handleNavToLanding(e, 'home')}>Home</a></li>
+            <li><a href="#lifecycle" className="landing-nav-link" onClick={(e) => handleNavToLanding(e, 'lifecycle')}>How It Works</a></li>
+            <li><a href="#features" className="landing-nav-link" onClick={(e) => handleNavToLanding(e, 'features')}>For Startups</a></li>
+            <li><a href="#features" className="landing-nav-link" onClick={(e) => handleNavToLanding(e, 'features')}>For Government</a></li>
+          </ul>
+
+          <button
+            className="landing-nav-auth-btn"
+            onClick={() => onNavigate('login')}
+          >
+            <UserCircle2 size={17} />
+            Login / Register
+          </button>
+        </div>
+      </nav>
+      
+      <div style={{ flex: 1, padding: '60px 20px', maxWidth: '900px', margin: '0 auto', width: '100%' }}>
+        <div style={{ backgroundColor: '#ffffff', borderRadius: '16px', boxShadow: '0 10px 25px -5px rgba(29, 67, 216, 0.1), 0 8px 10px -6px rgba(29, 67, 216, 0.05)', padding: '50px 60px', borderTop: '6px solid #1d43d8', borderBottom: '6px solid #d97706' }}>
+          <h1 style={{ fontSize: '2.5rem', fontWeight: 800, color: '#1d43d8', marginBottom: '40px', textAlign: 'center', borderBottom: '2px dashed #e2e8f0', paddingBottom: '20px' }}>{title}</h1>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            {children}
+          </div>
+        </div>
+      </div>
+
+      <Footer onNavigate={onNavigate} />
+    </div>
+  );
+};
+
+const SectionCard: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
+  <div style={{ padding: '24px', backgroundColor: '#f8fafc', borderRadius: '12px', borderLeft: '4px solid #d97706', borderTop: '1px solid #e2e8f0', borderRight: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
+    <h3 style={{ fontSize: '1.2rem', color: '#1d43d8', marginTop: 0, marginBottom: '14px', fontWeight: 700, lineHeight: 1.4 }}>
+      {title}
+    </h3>
+    <div style={{ color: '#334155', lineHeight: 1.7, fontSize: '1rem' }}>
+      {children}
+    </div>
+  </div>
+);
+
+export const FaqPage: React.FC<StaticPageProps> = ({ onNavigate }) => {
+  return (
+    <StaticLayout title="Frequently Asked Questions (FAQs)" onNavigate={onNavigate}>
+      <SectionCard title="1. How is YantraX different from existing platforms like GeM or CPPP?">
+        <p style={{ margin: 0 }}>YantraX does not replace GeM; rather, it acts as an "innovation bridge". While GeM focuses on procurement and CPPP on tendering, YantraX focuses on the stage before conventional procurement: problem discovery, startup matching, pilot evaluation, and preparing the solution for scale.</p>
+      </SectionCard>
+      
+      <SectionCard title="2. How does the platform handle the lack of prior experience or turnover that usually disqualifies early-stage startups?">
+        <p style={{ margin: 0 }}>Our platform replaces rigid traditional tenders with capped-value, low-risk sandbox pilots. By utilizing milestone-based, capped contracts, the platform lowers government risk and entirely removes prior-turnover and past-experience barriers for capable early-stage startups.</p>
+      </SectionCard>
+      
+      <SectionCard title="3. How do you ensure only legitimate startups participate in government challenges?">
+        <p style={{ margin: 0 }}>YantraX features a robust screening phase that integrates directly with DPIIT. The platform automatically verifies startup identity and checks eligibility through DPIIT before they can bid and participate.</p>
+      </SectionCard>
+      
+      <SectionCard title="4. How does the AI Matching Engine work?">
+        <p style={{ margin: 0 }}>The AI engine intelligently automates the discovery process for both sides. It automatically matches challenges posted by government departments to relevant startups based on their eligibility, sector, and specific project requirements.</p>
+      </SectionCard>
+      
+      <SectionCard title="5. How is IP (Intellectual Property) and data ownership handled during the pilot phase?">
+        <p style={{ margin: 0 }}>To prevent friction and legal risks regarding ambiguous ownership of IP and data, YantraX provides a Standard Templates Library. This library includes ready-made pilot-agreement, IP/data, and cybersecurity templates to standardize the drafting process for every department.</p>
+      </SectionCard>
+    </StaticLayout>
+  );
+};
+
+export const TermsPage: React.FC<StaticPageProps> = ({ onNavigate }) => {
+  return (
+    <StaticLayout title="Terms & Conditions" onNavigate={onNavigate}>
+      <SectionCard title="1. Eligibility and Access">
+        <p style={{ margin: '0 0 10px 0' }}><strong style={{ color: '#0f172a' }}>Startup Verification:</strong> To bid and participate on the platform, startups must undergo identity verification and eligibility checks via DPIIT integration.</p>
+        <p style={{ margin: 0 }}><strong style={{ color: '#0f172a' }}>User Roles:</strong> The platform provides specific access portals tailored for Government Departments, Startups, Independent Evaluators, and GeM integration.</p>
+      </SectionCard>
+      
+      <SectionCard title="2. Pilot Projects and Execution">
+        <p style={{ margin: '0 0 10px 0' }}><strong style={{ color: '#0f172a' }}>Capped-Value Sandbox Orders:</strong> Approved startups will enter a pilot phase executed as capped-value sandbox orders to validate solutions prior to large-scale deployment.</p>
+        <p style={{ margin: 0 }}><strong style={{ color: '#0f172a' }}>Milestone-Based Payments:</strong> Contracts are structured with milestone-based payment terms to ensure accountability and lower financial risk.</p>
+      </SectionCard>
+      
+      <SectionCard title="3. Evaluation and Scaling">
+        <p style={{ margin: '0 0 10px 0' }}><strong style={{ color: '#0f172a' }}>Independent Validation:</strong> During the pilot, independent evaluators will validate KPIs and confirm readiness for scale-up.</p>
+        <p style={{ margin: 0 }}><strong style={{ color: '#0f172a' }}>Scale-Up Execution:</strong> Successful, validated solutions will be approved for multi-department rollout and scaled via the GeM portal.</p>
+      </SectionCard>
+      
+      <SectionCard title="4. Compliance and Legal">
+        <p style={{ margin: 0 }}><strong style={{ color: '#0f172a' }}>Standard Agreements:</strong> All participants must utilize the platform's Standard Templates Library for problem statements, evaluation criteria, and pilot agreements to ensure regulatory feasibility and compliance.</p>
+      </SectionCard>
+    </StaticLayout>
+  );
+};
+
+export const PrivacyPage: React.FC<StaticPageProps> = ({ onNavigate }) => {
+  return (
+    <StaticLayout title="Privacy Policy" onNavigate={onNavigate}>
+      <SectionCard title="1. Data Collection and Storage">
+        <p style={{ margin: 0 }}>The platform collects and stores user data, application data, transaction data, contracts, and reports within our Data & Documentation Layer. Data is managed using highly available and scalable database systems, specifically PostgreSQL, MongoDB, and Redis.</p>
+      </SectionCard>
+      
+      <SectionCard title="2. Data Security and Encryption">
+        <p style={{ margin: 0 }}>We are committed to protecting sensitive business and government data. The platform implements secure authentication, data encryption, and strictly controlled access mechanisms across all portals.</p>
+      </SectionCard>
+      
+      <SectionCard title="3. Data Sharing and Integrations">
+        <p style={{ margin: 0 }}>To facilitate the end-to-end digital workflow, necessary data is securely integrated and shared with trusted third parties, including DPIIT (for identity checks) and the GeM Portal (for executing winning orders).</p>
+      </SectionCard>
+      
+      <SectionCard title="4. System Monitoring">
+        <p style={{ margin: 0 }}>The platform utilizes live, interactive dashboards for the real-time monitoring of key performance indicators (KPIs), milestones, system activity, and procurement insights.</p>
+      </SectionCard>
+    </StaticLayout>
+  );
+};
