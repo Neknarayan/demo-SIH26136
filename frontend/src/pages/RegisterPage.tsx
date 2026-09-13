@@ -23,6 +23,12 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate, onSucces
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    
+    if (!name.trim() || !email.trim() || !password.trim()) {
+      setError('Please fill in all required fields.');
+      return;
+    }
+    
     if (password.length < 8) {
       setError('Password must be at least 8 characters.');
       return;

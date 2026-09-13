@@ -45,7 +45,7 @@ def register(payload: UserRegister, db: Session = Depends(get_db)):
     if db.query(User).filter(User.email == payload.email).first():
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="An account with this email already exists.",
+            detail="An account with this email already exists. Please log in instead.",
         )
 
     db_role = _ROLE_MAP[payload.role]
@@ -111,8 +111,15 @@ def login(payload: UserLogin, db: Session = Depends(get_db)):
         detail="Invalid email or password.",
     )
 
-    if not user or not user.hashed_password:
+    if not user:
         raise _INVALID
+
+    if not user.hashed_password:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="This account is pending, disabled, or unavailable for login.",
+        )
+
     if not verify_password(payload.password, user.hashed_password):
         raise _INVALID
 

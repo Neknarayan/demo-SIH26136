@@ -60,12 +60,20 @@ class ApiClient {
       headers['X-User-Id'] = String(this.currentUserId);
     }
 
-    const response = await fetch(`${API_BASE}${path}`, {
-      ...options,
-      headers,
-    });
+    let response: Response;
+    try {
+      response = await fetch(`${API_BASE}${path}`, {
+        ...options,
+        headers,
+      });
+    } catch (err) {
+      throw new Error("Unable to connect to the server. Please check your internet connection.");
+    }
 
     if (!response.ok) {
+      if (response.status >= 500) {
+        throw new Error("Something went wrong. Please try again later.");
+      }
       let errorMessage = `HTTP Error ${response.status}: ${response.statusText}`;
       try {
         const errorData = await response.json();
@@ -87,12 +95,18 @@ class ApiClient {
 
   // ── Auth endpoints ──────────────────────────────────────────────────────────
   async authRegister(payload: RegisterPayload): Promise<TokenResponse> {
-    const res = await fetch(`${API_BASE}/api/auth/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
+    let res: Response;
+    try {
+      res = await fetch(`${API_BASE}/api/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+    } catch (err) {
+      throw new Error("Unable to connect to the server. Please check your internet connection.");
+    }
     if (!res.ok) {
+      if (res.status >= 500) throw new Error("Something went wrong. Please try again later.");
       const err = await res.json().catch(() => ({}));
       throw new Error((err as { detail?: string }).detail || 'Registration failed');
     }
@@ -100,12 +114,18 @@ class ApiClient {
   }
 
   async authLogin(payload: LoginPayload): Promise<TokenResponse> {
-    const res = await fetch(`${API_BASE}/api/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
+    let res: Response;
+    try {
+      res = await fetch(`${API_BASE}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+    } catch (err) {
+      throw new Error("Unable to connect to the server. Please check your internet connection.");
+    }
     if (!res.ok) {
+      if (res.status >= 500) throw new Error("Something went wrong. Please try again later.");
       const err = await res.json().catch(() => ({}));
       throw new Error((err as { detail?: string }).detail || 'Login failed');
     }
@@ -113,13 +133,22 @@ class ApiClient {
   }
 
   async authMe(): Promise<AuthUser> {
-    const res = await fetch(`${API_BASE}/api/auth/me`, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(this.jwtToken ? { Authorization: `Bearer ${this.jwtToken}` } : {}),
-      },
-    });
-    if (!res.ok) throw new Error('Not authenticated');
+    let res: Response;
+    try {
+      res = await fetch(`${API_BASE}/api/auth/me`, {
+        headers: {
+          'Content-Type': 'application/json',
+          ...(this.jwtToken ? { Authorization: `Bearer ${this.jwtToken}` } : {}),
+        },
+      });
+    } catch (err) {
+      throw new Error("Unable to connect to the server. Please check your internet connection.");
+    }
+    if (!res.ok) {
+      if (res.status >= 500) throw new Error("Something went wrong. Please try again later.");
+      const err = await res.json().catch(() => ({}));
+      throw new Error((err as { detail?: string }).detail || 'Authentication failed');
+    }
     return res.json() as Promise<AuthUser>;
   }
 

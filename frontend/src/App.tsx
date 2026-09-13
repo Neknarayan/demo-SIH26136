@@ -56,12 +56,14 @@ const AppShell: React.FC = () => {
   const { jwtUser, authLoading, logout } = useAuth();
   const [page, setPage] = React.useState<Page>('landing');
 
-  // Auto-enter dashboard if JWT session is already active
+  // Auto-redirect based on auth state
   useEffect(() => {
-    if (!authLoading && jwtUser) {
+    if (!authLoading && jwtUser && (page === 'landing' || page === 'login' || page === 'register')) {
       setPage('dashboard');
+    } else if (!authLoading && !jwtUser && page === 'dashboard') {
+      setPage('login');
     }
-  }, [authLoading, jwtUser]);
+  }, [authLoading, jwtUser, page]);
 
   if (authLoading) {
     return (

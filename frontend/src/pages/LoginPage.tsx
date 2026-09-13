@@ -19,6 +19,12 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate, onSuccess }) =
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    
+    if (!email.trim() || !password.trim()) {
+      setError('Please fill in all required fields.');
+      return;
+    }
+
     setLoading(true);
     try {
       await login({ email, password });

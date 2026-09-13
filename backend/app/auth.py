@@ -45,7 +45,7 @@ def decode_access_token(token: str) -> dict:
     except JWTError as exc:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token is invalid or expired.",
+            detail="Your session has expired. Please log in again.",
             headers={"WWW-Authenticate": "Bearer"},
         ) from exc
 
@@ -141,10 +141,7 @@ def require_role(*allowed_roles: str) -> Callable:
         if current_user.role not in allowed_roles:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail=(
-                    f"Access forbidden: your role '{current_user.role}' is not "
-                    f"authorized for this action. Required: {list(allowed_roles)}"
-                ),
+                detail="You are not authorized to perform this action.",
             )
         return current_user
     return role_checker
