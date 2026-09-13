@@ -1,5 +1,5 @@
 import React from "react";
-import { Globe, Mail, Phone, ExternalLink } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import logoImg from "../assets/maharastraGov.jpeg";
 export const Footer: React.FC = () => {
   return (
@@ -37,33 +37,7 @@ export const Footer: React.FC = () => {
               <span>Viksit Maharashtra</span>
             </div>
 
-            {/* SECTION 5: Connectivity / Contact */}
-            <div className="gov-footer-connect">
-              <span className="gov-footer-connect-label">Stay Connected:</span>
-              <div className="gov-footer-social-icons">
-                <span
-                  className="gov-social-icon-btn"
-                  title="Official Web Portal"
-                  aria-label="Official Web Portal"
-                >
-                  <Globe size={14} />
-                </span>
-                <span
-                  className="gov-social-icon-btn"
-                  title="Contact Email"
-                  aria-label="Contact Email"
-                >
-                  <Mail size={14} />
-                </span>
-                <span
-                  className="gov-social-icon-btn"
-                  title="Toll-Free Helpline"
-                  aria-label="Toll-Free Helpline"
-                >
-                  <Phone size={14} />
-                </span>
-              </div>
-            </div>
+
           </div>
 
           {/* SECTION 2: Quick Links */}
@@ -71,16 +45,16 @@ export const Footer: React.FC = () => {
             <h4 className="gov-footer-heading">Quick Links</h4>
             <ul className="gov-footer-list">
               <li>
-                <span className="gov-footer-link">Home</span>
+                <a href="#home" className="gov-footer-link">Home</a>
+              </li>
+              <li>
+                <a href="#lifecycle" className="gov-footer-link">How It Works</a>
               </li>
               <li>
                 <span className="gov-footer-link">About Us</span>
               </li>
               <li>
                 <span className="gov-footer-link">Contact Us</span>
-              </li>
-              <li>
-                <span className="gov-footer-link">Help & Support</span>
               </li>
             </ul>
           </div>
