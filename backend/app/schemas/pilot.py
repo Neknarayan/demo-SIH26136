@@ -17,11 +17,30 @@ class PilotBase(BaseModel):
 class PilotCreate(PilotBase):
     application_id: int
 
+from typing import Any
 class PilotResponse(PilotBase):
     id: int
     application_id: int
     status: str
     kpis: list[KPIResponse] = []
     decision: DecisionResponse | None = None
+    application: dict | None = None
+
+    @model_validator(mode="before")
+    def populate_application_dict(cls, values):
+        if hasattr(values, "application") and values.application:
+            app_obj = values.application
+            startup_obj = app_obj.startup
+            challenge_obj = app_obj.challenge
+            app_dict = {
+                "id": app_obj.id,
+                "startup": {"name": startup_obj.name, "dpiit_status": startup_obj.dpiit_status} if startup_obj else {},
+                "challenge": {"title": challenge_obj.title} if challenge_obj else {}
+            }
+            if isinstance(values, dict):
+                values["application"] = app_dict
+            else:
+                values.application = app_dict
+        return values
 
     model_config = ConfigDict(from_attributes=True)

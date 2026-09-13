@@ -55,7 +55,8 @@ def list_pilots(
     query = db.query(Pilot).options(
         joinedload(Pilot.kpis),
         joinedload(Pilot.decision),
-        joinedload(Pilot.application).joinedload(Application.startup)
+        joinedload(Pilot.application).joinedload(Application.startup),
+        joinedload(Pilot.application).joinedload(Application.challenge)
     )
 
     if current_user.role == "startup":
@@ -75,7 +76,8 @@ def get_pilot(
     pilot = db.query(Pilot).options(
         joinedload(Pilot.kpis),
         joinedload(Pilot.decision),
-        joinedload(Pilot.application).joinedload(Application.startup)
+        joinedload(Pilot.application).joinedload(Application.startup),
+        joinedload(Pilot.application).joinedload(Application.challenge)
     ).filter(Pilot.id == pilot_id).first()
 
     if not pilot:

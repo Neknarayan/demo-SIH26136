@@ -19,10 +19,6 @@ import {
   ChevronUp,
 } from 'lucide-react';
 
-import gov4 from '../../assets/gov4.jpeg';
-import gov5 from '../../assets/gov5.jpeg';
-import gov6 from '../../assets/gov6.jpeg';
-
 // ── Types ────────────────────────────────────────────────────────────────────
 export type PilotStage =
   | 'Sandbox Testing'
@@ -31,20 +27,6 @@ export type PilotStage =
   | 'Commercial Scaling';
 
 export type VerificationBadge = 'DPIIT Certified' | 'State Verified' | 'ISO 27001' | 'GEM Listed';
-
-export interface PilotEntry {
-  id: string;
-  startupName: string;
-  logoSrc: string;
-  department: string;
-  challengeTitle: string;
-  currentStage: PilotStage;
-  progressPct: number;
-  badges: VerificationBadge[];
-  startDate: string;
-  expectedCompletion: string;
-  highlights: string[];
-}
 
 // ── Stage metadata ────────────────────────────────────────────────────────────
 const STAGES: { key: PilotStage; icon: React.ReactNode; color: string }[] = [
@@ -59,59 +41,7 @@ function stageIndex(s: PilotStage): number {
 }
 
 // ── Demo data ────────────────────────────────────────────────────────────────
-const DEMO_PILOTS: PilotEntry[] = [
-  {
-    id: 'PLT-001',
-    startupName: 'AquaSense Technologies',
-    logoSrc: gov4,
-    department: 'Urban Development',
-    challengeTitle: 'Smart Water Monitoring for Municipal Networks',
-    currentStage: 'Field Pilot',
-    progressPct: 52,
-    badges: ['DPIIT Certified', 'State Verified'],
-    startDate: '2026-04-01',
-    expectedCompletion: '2026-12-31',
-    highlights: [
-      '32 IoT sensors deployed across Pune Zone 3',
-      'NRW reduced by 8% in sandbox phase',
-      'SCADA integration complete',
-    ],
-  },
-  {
-    id: 'PLT-002',
-    startupName: 'EcoUrban Systems',
-    logoSrc: gov5,
-    department: 'Urban Development',
-    challengeTitle: 'Automated Road Distress and Pothole Mapping',
-    currentStage: 'Sandbox Testing',
-    progressPct: 18,
-    badges: ['DPIIT Certified'],
-    startDate: '2026-07-15',
-    expectedCompletion: '2027-03-31',
-    highlights: [
-      'Model trained on 12,000 Maharashtra road images',
-      'Edge device approved for BEST bus fleet',
-      'Night-time recall accuracy: 91%',
-    ],
-  },
-  {
-    id: 'PLT-003',
-    startupName: 'HydroVision Labs',
-    logoSrc: gov6,
-    department: 'Water Resources',
-    challengeTitle: 'Canal Turbidity & Open-Channel Flow Monitoring',
-    currentStage: 'Departmental Clearance',
-    progressPct: 78,
-    badges: ['State Verified', 'GEM Listed'],
-    startDate: '2026-01-20',
-    expectedCompletion: '2026-10-31',
-    highlights: [
-      'Autonomous cameras installed on 14 canal nodes',
-      'Turbidity detection accuracy: 96.2%',
-      'GEM onboarding completed — awaiting final tender',
-    ],
-  },
-];
+
 
 // ── Sub-components ────────────────────────────────────────────────────────────
 const BADGE_ICONS: Record<VerificationBadge, React.ReactNode> = {
@@ -158,67 +88,80 @@ function StageRail({ currentStage }: { currentStage: PilotStage }) {
 }
 
 // ── Main Component ────────────────────────────────────────────────────────────
-export const PilotMilestoneTracker: React.FC = () => {
+export const PilotMilestoneTracker: React.FC<{ pilots: any[] }> = ({ pilots }) => {
   const [expanded, setExpanded] = useState<string | null>(null);
 
+  if (!pilots || pilots.length === 0) return null;
+
   return (
-    <section className="pmt-root">
-      <div className="landing-section-inner">
-        <h2 className="landing-section-title">Pilot Milestone Tracker</h2>
-        <p className="landing-section-sub">
-          Live procurement transparency — track onboarded startup pilots through each stage
+    <section className="pmt-root" style={{ padding: '40px 0', background: '#fff' }}>
+      <div className="landing-section-inner" style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px' }}>
+        <h2 className="landing-section-title" style={{ fontSize: '2rem', marginBottom: '10px', color: '#1e293b' }}>Live Pilot Milestones</h2>
+        <p className="landing-section-sub" style={{ fontSize: '1.1rem', color: '#64748b', marginBottom: '30px' }}>
+          Real-time tracking of active startup pilots and outcomes
         </p>
 
-        <div className="pmt-grid">
-          {DEMO_PILOTS.map((pilot) => {
-            const isOpen = expanded === pilot.id;
-            const stageColor = STAGES[stageIndex(pilot.currentStage)]?.color ?? '#2563eb';
+        <div className="pmt-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '24px' }}>
+          {pilots.map((pilot) => {
+            const pid = String(pilot.id);
+            const isOpen = expanded === pid;
+            
+            // Map db status to stage visually
+            let currentStage: PilotStage = 'Sandbox Testing';
+            let progressPct = 25;
+            if (pilot.status === 'completed') { currentStage = 'Departmental Clearance'; progressPct = 100; }
+            else if (pilot.status === 'active') { currentStage = 'Field Pilot'; progressPct = 60; }
+            
+            const stageColor = STAGES[stageIndex(currentStage)]?.color ?? '#2563eb';
+            const startupName = pilot.application?.startup?.name || 'Unknown Startup';
+            const challengeTitle = pilot.application?.challenge?.title || 'Unknown Challenge';
+            
+            const badges: VerificationBadge[] = [];
+            if (pilot.application?.startup?.dpiit_status) badges.push('DPIIT Certified');
 
             return (
-              <article key={pilot.id} className="pmt-card">
+              <article key={pid} className="pmt-card">
                 {/* Card header */}
                 <div className="pmt-card-top">
                   <div className="pmt-logo-wrap">
-                    <img src={pilot.logoSrc} alt={`${pilot.startupName} logo`} className="pmt-logo" />
-                    <span className="pmt-logo-fallback" aria-hidden="true">
-                      {pilot.startupName.charAt(0)}
+                    <span className="pmt-logo-fallback" aria-hidden="true" style={{ width: '40px', height: '40px', borderRadius: '8px', background: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', fontWeight: 'bold', color: '#475569' }}>
+                      {startupName.charAt(0)}
                     </span>
                   </div>
                   <div className="pmt-card-info">
-                    <h3 className="pmt-startup-name">{pilot.startupName}</h3>
-                    <span className="pmt-dept">{pilot.department}</span>
+                    <h3 className="pmt-startup-name">{startupName}</h3>
                     <div className="pmt-badges">
-                      {pilot.badges.map((b) => <BadgePill key={b} badge={b} />)}
+                      {badges.map((b) => <BadgePill key={b} badge={b} />)}
                     </div>
                   </div>
                 </div>
 
                 {/* Challenge */}
-                <p className="pmt-challenge-title">{pilot.challengeTitle}</p>
+                <p className="pmt-challenge-title">{challengeTitle}</p>
 
                 {/* Stage rail */}
-                <StageRail currentStage={pilot.currentStage} />
+                <StageRail currentStage={currentStage} />
                 <div className="pmt-stage-label" style={{ color: stageColor }}>
-                  Current: {pilot.currentStage}
+                  Current: {currentStage}
                 </div>
 
                 {/* Progress bar */}
                 <div className="pmt-progress-wrap">
                   <div
                     className="pmt-progress-bar"
-                    style={{ width: `${pilot.progressPct}%`, background: stageColor }}
+                    style={{ width: `${progressPct}%`, background: stageColor }}
                     role="progressbar"
-                    aria-valuenow={pilot.progressPct}
+                    aria-valuenow={progressPct}
                     aria-valuemin={0}
                     aria-valuemax={100}
                   />
                 </div>
-                <div className="pmt-progress-label">{pilot.progressPct}% complete</div>
+                <div className="pmt-progress-label">{progressPct}% complete</div>
 
                 {/* Expandable milestones */}
                 <button
                   className="pmt-expand-btn"
-                  onClick={() => setExpanded(isOpen ? null : pilot.id)}
+                  onClick={() => setExpanded(isOpen ? null : pid)}
                   aria-expanded={isOpen}
                 >
                   {isOpen
@@ -229,14 +172,12 @@ export const PilotMilestoneTracker: React.FC = () => {
 
                 {isOpen && (
                   <ul className="pmt-highlights">
-                    {pilot.highlights.map((h, i) => (
-                      <li key={i} className="pmt-highlight-item">
-                        <ShieldCheck size={13} className="pmt-highlight-icon" /> {h}
-                      </li>
-                    ))}
+                    <li className="pmt-highlight-item">
+                      <ShieldCheck size={13} className="pmt-highlight-icon" /> Scope: {pilot.scope}
+                    </li>
                     <li className="pmt-timeline-row">
-                      <span>Started: <strong>{pilot.startDate}</strong></span>
-                      <span>Expected: <strong>{pilot.expectedCompletion}</strong></span>
+                      <span>Started: <strong>{pilot.timeline_start}</strong></span>
+                      <span>Expected: <strong>{pilot.timeline_end}</strong></span>
                     </li>
                   </ul>
                 )}

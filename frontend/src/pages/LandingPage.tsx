@@ -17,7 +17,7 @@ import logoImg from '../assets/maharastraGov.jpeg';
 import { Footer } from '../components/Footer';
 import { HeroBannerSlider } from '../components/landing/HeroBannerSlider';
 import { ActiveProblemStatements } from '../components/landing/ActiveProblemStatements';
-import { PilotMilestoneTracker } from '../components/landing/PilotMilestoneTracker';
+
 import { NoticeTicker } from '../components/landing/NoticeTicker';
 
 
@@ -26,15 +26,15 @@ interface LandingPageProps {
 }
 
 const LIFECYCLE_STEPS = [
-  { icon: <Award size={22} />, label: 'Challenge', num: '01' },
-  { icon: <Search size={22} />, label: 'Discovery', num: '02' },
-  { icon: <FileCheck size={22} />, label: 'Eligibility', num: '03' },
-  { icon: <BarChart3 size={22} />, label: 'Evaluation', num: '04' },
-  { icon: <FlaskConical size={22} />, label: 'Pilot', num: '05' },
-  { icon: <BarChart3 size={22} />, label: 'KPI & Evidence', num: '06' },
-  { icon: <ShieldCheck size={22} />, label: 'Validation', num: '07' },
-  { icon: <TrendingUp size={22} />, label: 'Scale / Stop', num: '08' },
-  { icon: <Package size={22} />, label: 'Procurement Handoff', num: '09' },
+  { icon: <Award size={22} />, label: 'Challenge', num: '01', desc: "Government departments utilize standardized templates to publish outcome-based problem statements rather than traditional, rigid tenders.", color: '#3b82f6' },
+  { icon: <Search size={22} />, label: 'Discovery', num: '02', desc: "An AI-powered matching engine intelligently automates the discovery process by connecting government challenges with relevant startups.", color: '#8b5cf6' },
+  { icon: <FileCheck size={22} />, label: 'Eligibility', num: '03', desc: "Seamless DPIIT integration automatically verifies startup identity and checks eligibility, removing traditional prior-turnover barriers.", color: '#10b981' },
+  { icon: <BarChart3 size={22} />, label: 'Evaluation', num: '04', desc: "Expert reviews objectively assess the startup bids and proposals to select the most promising candidates for real-world testing.", color: '#f59e0b' },
+  { icon: <FlaskConical size={22} />, label: 'Pilot', num: '05', desc: "Startups deploy their innovative solutions through low-risk, capped-value sandbox orders supported by milestone-based payment terms.", color: '#ef4444' },
+  { icon: <BarChart3 size={22} />, label: 'KPI & Evidence', num: '06', desc: "Project progress is continuously documented through a single, real-time dashboard that monitors system activity, milestones, and key performance indicators.", color: '#06b6d4' },
+  { icon: <ShieldCheck size={22} />, label: 'Validation', num: '07', desc: "Independent evaluators objectively assess the collected evidence and validate pilot KPIs to confirm the solution's readiness for scale-up.", color: '#84cc16' },
+  { icon: <TrendingUp size={22} />, label: 'Scale / Stop', num: '08', desc: "Based on validated outcomes, government departments make a data-driven decision to either approve the solution for wider deployment or conclude the pilot.", color: '#6366f1' },
+  { icon: <Package size={22} />, label: 'Procurement Handoff', num: '09', desc: "Successful, validated solutions are seamlessly transitioned to the GeM portal for official execution and multi-department rollout.", color: '#d946ef' },
 ];
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
@@ -85,10 +85,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
            Filterable live RFP/challenge feed with deadline countdowns. */}
       <ActiveProblemStatements onApply={() => onNavigate('login')} />
 
-      {/* ── Pilot Milestone Tracker ───────────────────────────────────────────
-           Procurement transparency: real startup progress through 4 stages. */}
-      <PilotMilestoneTracker />
-
       {/* ── Innovation Procurement Lifecycle ───────────────────────────────── */}
       <section id="lifecycle" className="landing-lifecycle">
         <div className="landing-section-inner">
@@ -98,15 +94,29 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
           </p>
           <div className="landing-timeline">
             {LIFECYCLE_STEPS.map((step, idx) => (
-              <div key={step.num} className="landing-timeline-step">
+              <div key={step.num} className="landing-timeline-step" style={{ '--timeline-color': step.color } as React.CSSProperties}>
                 <div className="landing-timeline-circle">
                   <span className="landing-timeline-num">{step.num}</span>
                   <span className="landing-timeline-icon">{step.icon}</span>
                 </div>
                 {idx < LIFECYCLE_STEPS.length - 1 && (
-                  <div className="landing-timeline-connector" />
+                  <div className="landing-timeline-connector" style={{ background: `linear-gradient(to right, ${step.color} 0%, ${LIFECYCLE_STEPS[idx+1].color} 100%)` }} />
                 )}
                 <span className="landing-timeline-label">{step.label}</span>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ marginTop: '50px', display: 'flex', flexDirection: 'column', gap: '20px', maxWidth: '850px', marginLeft: 'auto', marginRight: 'auto' }}>
+            {LIFECYCLE_STEPS.map((step) => (
+              <div key={`desc-${step.num}`} style={{ padding: '24px', backgroundColor: '#f8fafc', borderRadius: '12px', borderLeft: `5px solid ${step.color}`, borderTop: '1px solid #e2e8f0', borderRight: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0', boxShadow: '0 2px 4px rgba(0,0,0,0.02)', textAlign: 'left' }}>
+                <h3 style={{ fontSize: '1.2rem', color: step.color, marginTop: 0, marginBottom: '10px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ backgroundColor: step.color, color: '#fff', padding: '2px 8px', borderRadius: '4px', fontSize: '0.9rem' }}>{step.num}</span>
+                  {step.label}
+                </h3>
+                <p style={{ color: '#334155', lineHeight: 1.6, fontSize: '1rem', margin: 0 }}>
+                  {step.desc}
+                </p>
               </div>
             ))}
           </div>

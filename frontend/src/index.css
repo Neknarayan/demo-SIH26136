@@ -1254,31 +1254,31 @@ body {
   height: 62px;
   border-radius: 50%;
   background: #fff;
-  border: 3px solid #2563eb;
+  border: 3px solid var(--timeline-color, #2563eb);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   position: relative;
   z-index: 1;
-  box-shadow: 0 4px 12px rgba(37,99,235,0.15);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .landing-timeline-circle:hover {
   transform: scale(1.08);
-  box-shadow: 0 8px 20px rgba(37,99,235,0.25);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
 }
 
 .landing-timeline-num {
   font-size: 10px;
   font-weight: 700;
-  color: #2563eb;
+  color: var(--timeline-color, #2563eb);
   line-height: 1;
 }
 
 .landing-timeline-icon {
-  color: #1d4ed8;
+  color: var(--timeline-color, #1d4ed8);
   line-height: 1;
 }
 

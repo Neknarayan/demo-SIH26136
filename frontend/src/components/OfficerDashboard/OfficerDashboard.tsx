@@ -3,6 +3,7 @@ import { api } from '../../api/client';
 import type { Challenge, Application, Pilot, KPI, Evidence, DecisionSupport } from '../../types';
 import { StatusBadge } from '../StatusBadge';
 import { DecisionSupportCard } from '../DecisionSupportCard';
+import { PilotMilestoneTracker } from '../landing/PilotMilestoneTracker';
 import {
   PlusCircle,
   FileText,
@@ -263,6 +264,9 @@ export const OfficerDashboard: React.FC = () => {
       {/* OVERVIEW TAB */}
       {activeTab === 'overview' && (
         <div>
+          <div style={{ marginBottom: '30px' }}>
+            <PilotMilestoneTracker pilots={pilots} />
+          </div>
           <div className="stat-grid">
             <div className="stat-card">
               <div>

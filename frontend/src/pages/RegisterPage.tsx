@@ -24,6 +24,8 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate, onSucces
   const [sector, setSector] = useState('');
   const [dpiitStatus, setDpiitStatus] = useState(false);
   const [profileText, setProfileText] = useState('');
+  
+  const [isEvaluator, setIsEvaluator] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,7 +49,8 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate, onSucces
     }
     setLoading(true);
     try {
-      const payload: any = { name, email, password, role };
+      const actualRole = role === 'gov_officer' && isEvaluator ? 'evaluator' : role;
+      const payload: any = { name, email, password, role: actualRole };
       if (role === 'startup') {
         payload.startup_profile = {
           sector,
@@ -162,6 +165,21 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate, onSucces
               </button>
             </div>
           </div>
+
+          {role === 'gov_officer' && (
+            <div className="auth-field" style={{ flexDirection: 'row', alignItems: 'center', gap: '8px', marginTop: '12px', padding: '12px', backgroundColor: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+              <input
+                id="reg-evaluator"
+                type="checkbox"
+                checked={isEvaluator}
+                onChange={(e) => setIsEvaluator(e.target.checked)}
+                style={{ width: '16px', height: '16px', cursor: 'pointer' }}
+              />
+              <label htmlFor="reg-evaluator" className="auth-label" style={{ marginBottom: 0, cursor: 'pointer', color: '#1e293b' }}>
+                Register as Independent Evaluator
+              </label>
+            </div>
+          )}
 
           {role === 'startup' && (
             <div className="auth-startup-fields">
