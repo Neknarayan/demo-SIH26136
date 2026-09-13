@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  ArrowRight,
   CheckCircle2,
   Building2,
   Rocket,
@@ -15,7 +14,6 @@ import {
   UserCircle2,
 } from 'lucide-react';
 import logoImg from '../assets/maharastraGov.jpeg';
-import heroImg from '../assets/gov3.jpeg';
 import { Footer } from '../components/Footer';
 import { HeroBannerSlider } from '../components/landing/HeroBannerSlider';
 import { ActiveProblemStatements } from '../components/landing/ActiveProblemStatements';
@@ -79,39 +77,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
         </div>
       </nav>
 
-      {/* ── Hero ───────────────────────────────────────────────────────────── */}
-      <section id="home" className="landing-hero" style={{ backgroundImage: `url(${heroImg})` }}>
-        <div className="landing-hero-overlay" />
-        <div className="landing-hero-content">
-          <span className="landing-hero-supertitle">GOVERNMENT OF MAHARASHTRA</span>
-          <h1 className="landing-hero-title">
-            Connecting Innovation to Governance<br />
-            for a Smarter Maharashtra
-          </h1>
-          <p className="landing-hero-subtitle">
-            A transparent, end-to-end platform that links government procurement challenges
-            with startup solutions — from problem statement to pilot to procurement.
-          </p>
-          <div className="landing-hero-ctas">
-            <button
-              className="landing-cta-primary"
-              onClick={() => onNavigate('login')}
-            >
-              Explore Challenges <ArrowRight size={16} />
-            </button>
-            <button
-              className="landing-cta-secondary"
-              onClick={() => onNavigate('register')}
-            >
-              Submit a Problem Statement
-            </button>
-          </div>
-        </div>
-      </section>
-
       {/* ── Hero Banner Slider ────────────────────────────────────────────────
-           3-slide initiative carousel using gov1/gov2/gov3 images. */}
-      <HeroBannerSlider autoPlayInterval={5000} />
+           3-slide initiative carousel acting as the main landing hero. */}
+      <HeroBannerSlider id="home" autoPlayInterval={5000} />
 
       {/* ── Active Problem Statements ─────────────────────────────────────────
            Filterable live RFP/challenge feed with deadline countdowns. */}

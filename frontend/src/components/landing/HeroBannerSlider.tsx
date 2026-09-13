@@ -66,10 +66,12 @@ const SLIDES: SlideData[] = [
 // ── Component ────────────────────────────────────────────────────────────────
 interface HeroBannerSliderProps {
   autoPlayInterval?: number;
+  id?: string;
 }
 
 export const HeroBannerSlider: React.FC<HeroBannerSliderProps> = ({
   autoPlayInterval = 5000,
+  id,
 }) => {
   const [current, setCurrent] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -97,6 +99,7 @@ export const HeroBannerSlider: React.FC<HeroBannerSliderProps> = ({
 
   return (
     <section
+      id={id}
       className="hbs-root"
       aria-label="Featured initiative carousel"
       onMouseEnter={() => setPaused(true)}
