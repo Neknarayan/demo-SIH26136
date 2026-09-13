@@ -4,7 +4,7 @@ import { Footer } from '../components/Footer';
 import logoImg from '../assets/maharastraGov.jpeg';
 
 interface StaticPageProps {
-  onNavigate: (page: 'landing' | 'login' | 'register' | 'faq' | 'terms' | 'privacy' | 'manual') => void;
+  onNavigate: (page: 'landing' | 'login' | 'register' | 'faq' | 'terms' | 'privacy' | 'manual' | 'about') => void;
 }
 
 const StaticLayout: React.FC<{ title: string; children: React.ReactNode; onNavigate: any }> = ({ title, children, onNavigate }) => {
@@ -174,6 +174,39 @@ export const UserManualPage: React.FC<StaticPageProps> = ({ onNavigate }) => {
         <p style={{ margin: '0 0 10px 0' }}><strong style={{ color: '#0f172a' }}>Independent Evaluation:</strong> Independent evaluators log into a dedicated Evaluator Portal to review the active pilots.</p>
         <p style={{ margin: '0 0 10px 0' }}><strong style={{ color: '#0f172a' }}>KPI Validation:</strong> Evaluators conduct transparent evaluation and scoring based on the predefined KPIs to confirm if the solution is ready for scale-up.</p>
         <p style={{ margin: 0 }}><strong style={{ color: '#0f172a' }}>GeM Integration:</strong> Once validated by evaluators and approved by the department, the solution transitions to the GeM Portal for multi-department rollout and large-scale execution.</p>
+      </SectionCard>
+    </StaticLayout>
+  );
+};
+
+export const AboutUsPage: React.FC<StaticPageProps> = ({ onNavigate }) => {
+  return (
+    <StaticLayout title="About Us" onNavigate={onNavigate}>
+      <SectionCard title="Who We Are">
+        <p style={{ margin: 0 }}>We are Team YantraX, the creators of ProcureBridge—an innovative platform developed for the Smart India Hackathon 2026 (Problem Statement ID: SIH25136). We are driven by the vision of bridging the gap between cutting-edge startup innovation and government public procurement.</p>
+      </SectionCard>
+      
+      <SectionCard title="Our Mission">
+        <p style={{ margin: 0 }}>Our mission is to build a transparent, efficient, and scalable procurement ecosystem for government innovation. We aim to replace rigid, spec-based traditional tenders with an agile, outcome-based mechanism that enables government departments to seamlessly identify, pilot, procure, and scale innovative solutions from eligible startups.</p>
+      </SectionCard>
+      
+      <SectionCard title="The Problem We Are Solving">
+        <p style={{ margin: 0 }}>Historically, public procurement has been a manual and slow process burdened by fragmented information and long sales cycles. Furthermore, standard tenders often include strict prior-turnover and past-experience clauses that unintentionally shut out capable, early-stage startups. This results in limited startup participation and innovative solutions being overlooked.</p>
+      </SectionCard>
+      
+      <SectionCard title="Our Solution: ProcureBridge">
+        <p style={{ margin: '0 0 10px 0' }}>To solve this, we built ProcureBridge, a unified digital platform that connects government departments, startups, DPIIT, independent evaluators, and GeM into a single end-to-end workflow.</p>
+        <p style={{ margin: '0 0 10px 0' }}>Our platform stands out by offering:</p>
+        <ul style={{ margin: '0 0 0 20px', padding: 0 }}>
+          <li style={{ marginBottom: '8px' }}><strong style={{ color: '#0f172a' }}>AI-Powered Discovery:</strong> Intelligently matching government challenges with relevant, eligible startups.</li>
+          <li style={{ marginBottom: '8px' }}><strong style={{ color: '#0f172a' }}>Pilot-First Approach:</strong> Utilizing capped-value, milestone-based sandbox pilots to validate solutions and lower financial risks before large-scale deployment.</li>
+          <li style={{ marginBottom: '8px' }}><strong style={{ color: '#0f172a' }}>Barrier-Free Entry:</strong> Integrating directly with DPIIT to screen eligibility automatically, removing traditional turnover hurdles for startups.</li>
+          <li style={{ marginBottom: '0' }}><strong style={{ color: '#0f172a' }}>Standardized Security:</strong> Providing ready-made templates for IP, data disputes, and cybersecurity to ensure safe and frictionless collaborations.</li>
+        </ul>
+      </SectionCard>
+      
+      <SectionCard title="Our Impact">
+        <p style={{ margin: 0 }}>Through ProcureBridge, we are striving for a future where public funds are used smarter, local empowerment and job creation are accelerated, and citizens benefit from better, more innovative public services.</p>
       </SectionCard>
     </StaticLayout>
   );
