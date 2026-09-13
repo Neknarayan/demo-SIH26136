@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   CheckCircle2,
   Building2,
@@ -36,7 +36,6 @@ const LIFECYCLE_STEPS = [
 ];
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
-  const [email, setEmail] = useState('');
 
   return (
     <div className="landing-page">
@@ -190,25 +189,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
         </div>
       </section>
 
-      {/* ── Subscribe / CTA strip ───────────────────────────────────────────── */}
-      <section className="landing-subscribe">
-        <div className="landing-section-inner landing-subscribe-inner">
-          <div className="landing-subscribe-text">
-            <h3>Stay Updated on New Challenges</h3>
-            <p>Get notified when new government procurement challenges are published.</p>
-          </div>
-          <div className="landing-subscribe-form">
-            <input
-              type="email"
-              placeholder="Enter your email address"
-              className="landing-subscribe-input"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <button className="landing-subscribe-btn">Subscribe</button>
-          </div>
-        </div>
-      </section>
+
 
       <Footer onNavigate={onNavigate} />
     </div>
