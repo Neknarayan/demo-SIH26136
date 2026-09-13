@@ -5,7 +5,7 @@ import { NoticeTicker } from '../components/landing/NoticeTicker';
 import logoImg from '../assets/maharastraGov.jpeg';
 
 interface StaticPageProps {
-  onNavigate: (page: 'landing' | 'login' | 'register' | 'faq' | 'terms' | 'privacy') => void;
+  onNavigate: (page: 'landing' | 'login' | 'register' | 'faq' | 'terms' | 'privacy' | 'manual') => void;
 }
 
 const StaticLayout: React.FC<{ title: string; children: React.ReactNode; onNavigate: any }> = ({ title, children, onNavigate }) => {
@@ -148,6 +148,34 @@ export const PrivacyPage: React.FC<StaticPageProps> = ({ onNavigate }) => {
       
       <SectionCard title="4. System Monitoring">
         <p style={{ margin: 0 }}>The platform utilizes live, interactive dashboards for the real-time monitoring of key performance indicators (KPIs), milestones, system activity, and procurement insights.</p>
+      </SectionCard>
+    </StaticLayout>
+  );
+};
+
+export const UserManualPage: React.FC<StaticPageProps> = ({ onNavigate }) => {
+  return (
+    <StaticLayout title="User Manual" onNavigate={onNavigate}>
+      <SectionCard title="Introduction to ProcureBridge">
+        <p style={{ margin: 0 }}>Welcome to ProcureBridge, an end-to-end digital platform designed to enable government departments to identify, pilot, procure, and scale innovative solutions from eligible startups. This manual outlines the specific workflows for our primary platform users.</p>
+      </SectionCard>
+      
+      <SectionCard title="Government Department Guide">
+        <p style={{ margin: '0 0 10px 0' }}><strong style={{ color: '#0f172a' }}>Drafting Problem Statements:</strong> Navigate to the Challenge Management module and utilize the Standard Templates Library to easily draft outcome-based problem statements, evaluation criteria, and cybersecurity agreements.</p>
+        <p style={{ margin: '0 0 10px 0' }}><strong style={{ color: '#0f172a' }}>Launching Pilots:</strong> Publish your challenge to the unified platform to initiate the discovery phase. Instead of issuing rigid tenders, you will issue low-risk, capped-value sandbox pilot orders.</p>
+        <p style={{ margin: 0 }}><strong style={{ color: '#0f172a' }}>Live Monitoring:</strong> Access your interactive dashboard to track real-time KPIs, project milestones, and authorize milestone-based payment terms as the pilot progresses.</p>
+      </SectionCard>
+      
+      <SectionCard title="Startup Innovator Guide">
+        <p style={{ margin: '0 0 10px 0' }}><strong style={{ color: '#0f172a' }}>Onboarding & Verification:</strong> Register through the Startup Portal. The platform automatically interfaces with DPIIT to verify your startup identity and check eligibility, entirely removing traditional prior-turnover barriers.</p>
+        <p style={{ margin: '0 0 10px 0' }}><strong style={{ color: '#0f172a' }}>Automated Discovery:</strong> You do not need to manually search for tenders. The AI Matching Engine intelligently connects your profile with relevant government challenges based on sector and eligibility.</p>
+        <p style={{ margin: 0 }}><strong style={{ color: '#0f172a' }}>Delivering Solutions:</strong> Once selected, bid and participate in the pilot phase. Execute your innovative solutions under protected IP agreements while receiving structured, milestone-based payments.</p>
+      </SectionCard>
+      
+      <SectionCard title="Evaluator & Scale-Up Workflow">
+        <p style={{ margin: '0 0 10px 0' }}><strong style={{ color: '#0f172a' }}>Independent Evaluation:</strong> Independent evaluators log into a dedicated Evaluator Portal to review the active pilots.</p>
+        <p style={{ margin: '0 0 10px 0' }}><strong style={{ color: '#0f172a' }}>KPI Validation:</strong> Evaluators conduct transparent evaluation and scoring based on the predefined KPIs to confirm if the solution is ready for scale-up.</p>
+        <p style={{ margin: 0 }}><strong style={{ color: '#0f172a' }}>GeM Integration:</strong> Once validated by evaluators and approved by the department, the solution transitions to the GeM Portal for multi-department rollout and large-scale execution.</p>
       </SectionCard>
     </StaticLayout>
   );

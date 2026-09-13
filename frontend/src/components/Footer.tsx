@@ -2,7 +2,7 @@ import React from "react";
 import { ExternalLink } from "lucide-react";
 import logoImg from "../assets/maharastraGov.jpeg";
 interface FooterProps {
-  onNavigate?: (page: 'landing' | 'faq' | 'terms' | 'privacy') => void;
+  onNavigate?: (page: 'landing' | 'faq' | 'terms' | 'privacy' | 'manual' | any) => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
@@ -68,7 +68,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             <h4 className="gov-footer-heading">Resources</h4>
             <ul className="gov-footer-list">
               <li>
-                <span className="gov-footer-link">User Manual</span>
+                <button type="button" className="gov-footer-link" onClick={() => onNavigate?.('manual')} style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', cursor: 'pointer' }}>User Manual</button>
               </li>
               <li>
                 <button type="button" className="gov-footer-link" onClick={() => onNavigate?.('faq')} style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', cursor: 'pointer' }}>FAQs</button>

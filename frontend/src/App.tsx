@@ -3,7 +3,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { LandingPage } from './pages/LandingPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
-import { FaqPage, TermsPage, PrivacyPage } from './pages/StaticPages';
+import { FaqPage, TermsPage, PrivacyPage, UserManualPage } from './pages/StaticPages';
 import { RoleSelector } from './components/RoleSelector';
 import { OfficerDashboard } from './components/OfficerDashboard/OfficerDashboard';
 import { StartupDashboard } from './components/StartupDashboard/StartupDashboard';
@@ -11,7 +11,7 @@ import { EvaluatorDashboard } from './components/EvaluatorDashboard/EvaluatorDas
 import { Footer } from './components/Footer';
 import { Loader2, LogOut } from 'lucide-react';
 
-type Page = 'landing' | 'login' | 'register' | 'dashboard' | 'faq' | 'terms' | 'privacy';
+type Page = 'landing' | 'login' | 'register' | 'dashboard' | 'faq' | 'terms' | 'privacy' | 'manual';
 
 // ── Dashboard Router (unchanged logic) ───────────────────────────────────────
 const DashboardRouter: React.FC = () => {
@@ -107,6 +107,7 @@ const AppShell: React.FC = () => {
   if (page === 'faq') return <FaqPage onNavigate={(p) => setPage(p)} />;
   if (page === 'terms') return <TermsPage onNavigate={(p) => setPage(p)} />;
   if (page === 'privacy') return <PrivacyPage onNavigate={(p) => setPage(p)} />;
+  if (page === 'manual') return <UserManualPage onNavigate={(p) => setPage(p)} />;
 
   // Dashboard (authenticated)
   return (
