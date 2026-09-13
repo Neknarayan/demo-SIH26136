@@ -2,6 +2,12 @@ import React, { useEffect } from "react";
 import { UserCircle2 } from "lucide-react";
 import { Footer } from "../components/Footer";
 import logoImg from "../assets/maharastraGov.jpeg";
+import nekImg from "../assets/Nek.jpeg";
+import siddharthImg from "../assets/Siddharth.webp";
+import rishabImg from "../assets/Rishab.jpeg";
+import surajImg from "../assets/Suraj.jpg";
+import prawinImg from "../assets/Prawin.jpeg";
+import vidhiImg from "../assets/Vidhi.jpeg";
 
 interface StaticPageProps {
   onNavigate: (
@@ -431,8 +437,72 @@ export const UserManualPage: React.FC<StaticPageProps> = ({ onNavigate }) => {
 };
 
 export const AboutUsPage: React.FC<StaticPageProps> = ({ onNavigate }) => {
+  const teamMembers = [
+    { name: 'Neknarayan', role: 'Backend Developer and Visual artist', color: '#3b82f6', img: nekImg },
+    { name: 'Siddharth Pandey', role: 'Frontend + backend', color: '#8b5cf6', img: siddharthImg },
+    { name: 'Rishab jat', role: 'Team leader', color: '#10b981', img: rishabImg },
+    { name: 'Suraj Chaurasiya', role: 'frontend', color: '#ef4444', img: surajImg },
+    { name: 'Prawin Kumar', role: 'Ai/Ml + model traning', color: '#06b6d4', img: prawinImg },
+    { name: 'Vidhi Jain', role: 'Ml & Corporate Responsibility', color: '#d946ef', img: vidhiImg },
+  ];
+
   return (
     <StaticLayout title="About Us" onNavigate={onNavigate}>
+      
+      <div style={{ marginBottom: "2rem" }}>
+        <h3 style={{ fontSize: "1.5rem", fontWeight: "700", color: "#1e293b", marginBottom: "1.5rem", textAlign: "center" }}>
+          Team Members
+        </h3>
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+          gap: "2rem"
+        }}>
+          {teamMembers.map((member, idx) => (
+            <div key={idx} style={{
+              backgroundColor: "#fff",
+              borderRadius: "12px",
+              padding: "1.5rem",
+              textAlign: "center",
+              boxShadow: `0 10px 25px -5px ${member.color}40, 0 8px 10px -6px ${member.color}40`,
+              border: `1px solid ${member.color}20`,
+              transition: "transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "translateY(-5px)";
+              e.currentTarget.style.boxShadow = `0 20px 25px -5px ${member.color}60, 0 10px 10px -5px ${member.color}50`;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "none";
+              e.currentTarget.style.boxShadow = `0 10px 25px -5px ${member.color}40, 0 8px 10px -6px ${member.color}40`;
+            }}>
+              <div style={{
+                width: "120px",
+                height: "120px",
+                margin: "0 auto 1rem auto",
+                borderRadius: "50%",
+                padding: "4px",
+                background: `linear-gradient(135deg, ${member.color}, ${member.color}80)`,
+              }}>
+                <img 
+                  src={member.img} 
+                  alt={member.name} 
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    borderRadius: "50%",
+                    border: "4px solid #fff"
+                  }} 
+                />
+              </div>
+              <h4 style={{ margin: "0 0 0.5rem 0", fontSize: "1.25rem", color: "#0f172a", fontWeight: "600" }}>{member.name}</h4>
+              <p style={{ margin: 0, color: "#64748b", fontSize: "0.95rem", fontWeight: "500" }}>{member.role}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
       <SectionCard title="Who We Are">
         <p style={{ margin: 0 }}>
           We are Team YantraX, the creators of ProcureBridge—an innovative
@@ -512,16 +582,35 @@ export const ContactUsPage: React.FC<StaticPageProps> = ({ onNavigate }) => {
   return (
     <StaticLayout title="Contact Us" onNavigate={onNavigate}>
       <SectionCard title="Email Us Directly">
-        <p style={{ margin: '0 0 10px 0' }}>Drop us a message and we will get back to you as soon as possible.</p>
-        <p style={{ margin: '0 0 20px 0' }}>
-          <a href="mailto:siddharthpandey1011@gmail.com" style={{ color: '#2563eb', textDecoration: 'underline', fontWeight: 600 }}>
-            siddharthpandey1011@gmail.com
+        <p style={{ margin: "0 0 10px 0" }}>
+          Drop us a message and we will get back to you as soon as possible.
+        </p>
+        <p style={{ margin: "0 0 20px 0" }}>
+          <a
+            href="mailto:sidmusicpandey@gmail.com"
+            style={{
+              color: "#2563eb",
+              textDecoration: "underline",
+              fontWeight: 600,
+            }}
+          >
+            sidmusicpandey@gmail.com
           </a>
         </p>
-        <p style={{ margin: '0 0 10px 0', fontWeight: 600, color: '#0f172a' }}>What to include in your email:</p>
-        <ul style={{ margin: '0 0 0 20px', padding: 0 }}>
-          <li style={{ marginBottom: '8px' }}><strong style={{ color: '#0f172a' }}>Subject Line:</strong> Please mention the reason for your contact (e.g., Question about ProcureBridge Pilot, SIH Feedback, or General Inquiry).</li>
-          <li style={{ marginBottom: '0' }}><strong style={{ color: '#0f172a' }}>Your Details:</strong> Include your name, organization (if applicable), and how we can best assist you.</li>
+        <p style={{ margin: "0 0 10px 0", fontWeight: 600, color: "#0f172a" }}>
+          What to include in your email:
+        </p>
+        <ul style={{ margin: "0 0 0 20px", padding: 0 }}>
+          <li style={{ marginBottom: "8px" }}>
+            <strong style={{ color: "#0f172a" }}>Subject Line:</strong> Please
+            mention the reason for your contact (e.g., Question about
+            ProcureBridge Pilot, SIH Feedback, or General Inquiry).
+          </li>
+          <li style={{ marginBottom: "0" }}>
+            <strong style={{ color: "#0f172a" }}>Your Details:</strong> Include
+            your name, organization (if applicable), and how we can best assist
+            you.
+          </li>
         </ul>
       </SectionCard>
     </StaticLayout>
