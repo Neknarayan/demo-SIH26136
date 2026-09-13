@@ -449,10 +449,7 @@ export const AboutUsPage: React.FC<StaticPageProps> = ({ onNavigate }) => {
   return (
     <StaticLayout title="About Us" onNavigate={onNavigate}>
       
-      <div style={{ marginBottom: "2rem" }}>
-        <h3 style={{ fontSize: "1.5rem", fontWeight: "700", color: "#1e293b", marginBottom: "1.5rem", textAlign: "center" }}>
-          Team Members
-        </h3>
+      <SectionCard title="Team Members">
         <div style={{
           display: "grid",
           gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
@@ -465,7 +462,7 @@ export const AboutUsPage: React.FC<StaticPageProps> = ({ onNavigate }) => {
               padding: "1.5rem",
               textAlign: "center",
               boxShadow: `0 10px 25px -5px ${member.color}40, 0 8px 10px -6px ${member.color}40`,
-              border: `1px solid ${member.color}20`,
+              border: `1px solid ${member.color}30`,
               transition: "transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out",
             }}
             onMouseEnter={(e) => {
@@ -477,9 +474,9 @@ export const AboutUsPage: React.FC<StaticPageProps> = ({ onNavigate }) => {
               e.currentTarget.style.boxShadow = `0 10px 25px -5px ${member.color}40, 0 8px 10px -6px ${member.color}40`;
             }}>
               <div style={{
-                width: "120px",
-                height: "120px",
-                margin: "0 auto 1rem auto",
+                width: "160px",
+                height: "160px",
+                margin: "0 auto 1.25rem auto",
                 borderRadius: "50%",
                 padding: "4px",
                 background: `linear-gradient(135deg, ${member.color}, ${member.color}80)`,
@@ -491,17 +488,18 @@ export const AboutUsPage: React.FC<StaticPageProps> = ({ onNavigate }) => {
                     width: "100%",
                     height: "100%",
                     objectFit: "cover",
+                    objectPosition: "top",
                     borderRadius: "50%",
                     border: "4px solid #fff"
                   }} 
                 />
               </div>
-              <h4 style={{ margin: "0 0 0.5rem 0", fontSize: "1.25rem", color: "#0f172a", fontWeight: "600" }}>{member.name}</h4>
-              <p style={{ margin: 0, color: "#64748b", fontSize: "0.95rem", fontWeight: "500" }}>{member.role}</p>
+              <h4 style={{ margin: "0 0 0.5rem 0", fontSize: "1.35rem", color: member.color, fontWeight: "800" }}>{member.name}</h4>
+              <p style={{ margin: 0, color: "#1e293b", fontSize: "1rem", fontWeight: "700" }}>{member.role}</p>
             </div>
           ))}
         </div>
-      </div>
+      </SectionCard>
 
       <SectionCard title="Who We Are">
         <p style={{ margin: 0 }}>
