@@ -105,45 +105,50 @@ export const HeroBannerSlider: React.FC<HeroBannerSliderProps> = ({
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      {/* Background image */}
-      <div className={`hbs-bg${fading ? ' hbs-bg--fade' : ''}`}>
-        <img src={slide.imageSrc} alt={slide.imageAlt} className="hbs-bg-img" draggable={false} />
-        <div className="hbs-overlay" />
+      <div className="hbs-inner">
+        {/* Left Col: Slide content */}
+        <div className="hbs-text-col">
+          <div className={`hbs-content${fading ? ' hbs-content--fade' : ''}`}>
+            <span className="hbs-tag">{slide.tag}</span>
+            <h2 className="hbs-title">{slide.title}</h2>
+            <p className="hbs-desc">{slide.description}</p>
+            <a href={slide.ctaLink} className="hbs-cta">
+              {slide.ctaLabel} <ExternalLink size={14} />
+            </a>
+          </div>
+        </div>
+
+        {/* Right Col: Slider image */}
+        <div className="hbs-image-col">
+          <div className={`hbs-bg${fading ? ' hbs-bg--fade' : ''}`}>
+            <img src={slide.imageSrc} alt={slide.imageAlt} className="hbs-bg-img" draggable={false} />
+          </div>
+
+          {/* Prev / Next arrows */}
+          <button className="hbs-arrow hbs-arrow--prev" onClick={prev} aria-label="Previous slide">
+            <ChevronLeft size={22} />
+          </button>
+          <button className="hbs-arrow hbs-arrow--next" onClick={next} aria-label="Next slide">
+            <ChevronRight size={22} />
+          </button>
+
+          {/* Dot indicators */}
+          <div className="hbs-dots" role="tablist">
+            {SLIDES.map((s, i) => (
+              <button
+                key={s.id}
+                role="tab"
+                aria-selected={i === current}
+                aria-label={`Slide ${i + 1}: ${s.title}`}
+                className={`hbs-dot${i === current ? ' hbs-dot--active' : ''}`}
+                onClick={() => goTo(i)}
+              />
+            ))}
+          </div>
+
+          {paused && <span className="hbs-paused-badge">Paused</span>}
+        </div>
       </div>
-
-      {/* Slide content */}
-      <div className={`hbs-content${fading ? ' hbs-content--fade' : ''}`}>
-        <span className="hbs-tag">{slide.tag}</span>
-        <h2 className="hbs-title">{slide.title}</h2>
-        <p className="hbs-desc">{slide.description}</p>
-        <a href={slide.ctaLink} className="hbs-cta">
-          {slide.ctaLabel} <ExternalLink size={14} />
-        </a>
-      </div>
-
-      {/* Prev / Next arrows */}
-      <button className="hbs-arrow hbs-arrow--prev" onClick={prev} aria-label="Previous slide">
-        <ChevronLeft size={22} />
-      </button>
-      <button className="hbs-arrow hbs-arrow--next" onClick={next} aria-label="Next slide">
-        <ChevronRight size={22} />
-      </button>
-
-      {/* Dot indicators */}
-      <div className="hbs-dots" role="tablist">
-        {SLIDES.map((s, i) => (
-          <button
-            key={s.id}
-            role="tab"
-            aria-selected={i === current}
-            aria-label={`Slide ${i + 1}: ${s.title}`}
-            className={`hbs-dot${i === current ? ' hbs-dot--active' : ''}`}
-            onClick={() => goTo(i)}
-          />
-        ))}
-      </div>
-
-      {paused && <span className="hbs-paused-badge">Paused</span>}
     </section>
   );
 };
