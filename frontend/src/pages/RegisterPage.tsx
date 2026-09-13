@@ -20,6 +20,11 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate, onSucces
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // Startup profile fields
+  const [sector, setSector] = useState('');
+  const [dpiitStatus, setDpiitStatus] = useState(false);
+  const [profileText, setProfileText] = useState('');
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -29,13 +34,28 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate, onSucces
       return;
     }
     
+    if (role === 'startup') {
+      if (!sector.trim() || !profileText.trim()) {
+        setError('Please fill in all startup profile fields.');
+        return;
+      }
+    }
+
     if (password.length < 8) {
       setError('Password must be at least 8 characters.');
       return;
     }
     setLoading(true);
     try {
-      await register({ name, email, password, role });
+      const payload: any = { name, email, password, role };
+      if (role === 'startup') {
+        payload.startup_profile = {
+          sector,
+          dpiit_status: dpiitStatus,
+          profile_text: profileText
+        };
+      }
+      await register(payload);
       onSuccess();
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Registration failed. Please try again.');
@@ -138,10 +158,53 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate, onSucces
                 onClick={() => setShowPass((p) => !p)}
                 aria-label={showPass ? 'Hide password' : 'Show password'}
               >
-                {showPass ? <EyeOff size={15} /> : <Eye size={15} />}
+                {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
           </div>
+
+          {role === 'startup' && (
+            <div className="auth-startup-fields">
+              <div className="auth-field">
+                <label htmlFor="reg-sector" className="auth-label">Sector</label>
+                <input
+                  id="reg-sector"
+                  type="text"
+                  required
+                  className="auth-input"
+                  placeholder="e.g. Agritech, FinTech, EdTech"
+                  value={sector}
+                  onChange={(e) => setSector(e.target.value)}
+                  style={{ paddingLeft: '12px' }}
+                />
+              </div>
+
+              <div className="auth-field">
+                <label htmlFor="reg-profile-text" className="auth-label">Profile Text</label>
+                <textarea
+                  id="reg-profile-text"
+                  required
+                  className="auth-input"
+                  placeholder="Describe your startup..."
+                  value={profileText}
+                  onChange={(e) => setProfileText(e.target.value)}
+                  style={{ paddingLeft: '12px', minHeight: '60px', paddingTop: '8px' }}
+                />
+              </div>
+
+              <div className="auth-field" style={{ flexDirection: 'row', alignItems: 'center', gap: '8px' }}>
+                <input
+                  id="reg-dpiit"
+                  type="checkbox"
+                  checked={dpiitStatus}
+                  onChange={(e) => setDpiitStatus(e.target.checked)}
+                />
+                <label htmlFor="reg-dpiit" className="auth-label" style={{ marginBottom: 0 }}>
+                  DPIIT Recognized Startup
+                </label>
+              </div>
+            </div>
+          )}
 
           <button type="submit" className="auth-submit-btn" disabled={loading}>
             {loading ? (

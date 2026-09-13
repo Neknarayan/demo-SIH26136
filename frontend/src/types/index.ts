@@ -25,6 +25,11 @@ export interface RegisterPayload {
   email: string;
   password: string;
   role: 'startup' | 'gov_officer';
+  startup_profile?: {
+    sector: string;
+    dpiit_status: boolean;
+    profile_text: string;
+  };
 }
 
 
