@@ -64,7 +64,13 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                 </a>
               </li>
               <li>
-                <span className="gov-footer-link">Contact Us</span>
+                <a 
+                  href="#"
+                  className="gov-footer-link"
+                  onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('contact'); }}
+                >
+                  Contact Us
+                </a>
               </li>
             </ul>
           </div>
