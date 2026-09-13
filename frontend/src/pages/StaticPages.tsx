@@ -438,9 +438,9 @@ export const UserManualPage: React.FC<StaticPageProps> = ({ onNavigate }) => {
 
 export const AboutUsPage: React.FC<StaticPageProps> = ({ onNavigate }) => {
   const teamMembers = [
-    { name: 'Neknarayan', role: 'Backend Developer and Visual artist', color: '#3b82f6', img: nekImg },
     { name: 'Siddharth Pandey', role: 'Frontend + backend', color: '#8b5cf6', img: siddharthImg },
-    { name: 'Rishab jat', role: 'Team leader', color: '#10b981', img: rishabImg },
+    { name: 'Rishab jat', role: 'Team leader', color: '#10b981', img: rishabImg, imgPos: 'center 15%' },
+    { name: 'Neknarayan', role: 'Backend Developer and Visual artist', color: '#3b82f6', img: nekImg },
     { name: 'Suraj Chaurasiya', role: 'frontend', color: '#ef4444', img: surajImg },
     { name: 'Prawin Kumar', role: 'Ai/Ml + model traning', color: '#06b6d4', img: prawinImg },
     { name: 'Vidhi Jain', role: 'Ml & Corporate Responsibility', color: '#d946ef', img: vidhiImg },
@@ -488,7 +488,7 @@ export const AboutUsPage: React.FC<StaticPageProps> = ({ onNavigate }) => {
                     width: "100%",
                     height: "100%",
                     objectFit: "cover",
-                    objectPosition: "top",
+                    objectPosition: member.imgPos || "top",
                     borderRadius: "50%",
                     border: "4px solid #fff"
                   }} 
