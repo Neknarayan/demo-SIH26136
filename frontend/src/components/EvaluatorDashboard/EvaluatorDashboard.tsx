@@ -4,12 +4,9 @@ import type { Application, Challenge } from '../../types';
 import { StatusBadge } from '../StatusBadge';
 import { Award, CheckCircle, Clock, X } from 'lucide-react';
 
-import { PilotMilestoneTracker } from '../landing/PilotMilestoneTracker';
-
 export const EvaluatorDashboard: React.FC = () => {
   const [applications, setApplications] = useState<Application[]>([]);
   const [challenges, setChallenges] = useState<Challenge[]>([]);
-  const [pilots, setPilots] = useState<any[]>([]);
   const [selectedApp, setSelectedApp] = useState<Application | null>(null);
   const [score, setScore] = useState<number>(85);
   const [notes, setNotes] = useState<string>('');
@@ -23,14 +20,12 @@ export const EvaluatorDashboard: React.FC = () => {
 
   const loadData = async () => {
     try {
-      const [appData, chData, piData] = await Promise.all([
+      const [appData, chData] = await Promise.all([
         api.getApplications(),
         api.getChallenges(),
-        api.getPilots(),
       ]);
       setApplications(appData);
       setChallenges(chData);
-      setPilots(piData);
     } catch (err: unknown) {
       showToast('error', err instanceof Error ? err.message : 'Failed to load evaluator data');
     }
@@ -73,10 +68,6 @@ export const EvaluatorDashboard: React.FC = () => {
         <div className="active-persona-pill" style={{ background: '#f5f3ff', color: '#6d28d9', border: '1px solid #ddd6fe' }}>
           <Award size={14} /> Certified Technical Evaluator
         </div>
-      </div>
-
-      <div style={{ marginBottom: '40px' }}>
-        <PilotMilestoneTracker pilots={pilots} />
       </div>
 
       <div className="table-container">

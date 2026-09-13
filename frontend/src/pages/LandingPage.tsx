@@ -18,8 +18,6 @@ import { Footer } from '../components/Footer';
 import { HeroBannerSlider } from '../components/landing/HeroBannerSlider';
 import { ActiveProblemStatements } from '../components/landing/ActiveProblemStatements';
 
-import { NoticeTicker } from '../components/landing/NoticeTicker';
-
 
 interface LandingPageProps {
   onNavigate: (page: any) => void;
@@ -42,14 +40,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
 
   return (
     <div className="landing-page">
-      {/* ── Notice Ticker (very top — before navbar) ──────────────────────────
-           Official gazette releases, deadline extensions, policy updates. */}
-      <NoticeTicker />
-
       {/* ── Navbar ─────────────────────────────────────────────────────────── */}
       <nav className="landing-nav">
         <div className="landing-nav-inner">
-          {/* Logo */}
           <div className="landing-nav-logo">
             <img src={logoImg} alt="GoM Seal" className="landing-nav-emblem" />
             <div className="landing-nav-brand-text">

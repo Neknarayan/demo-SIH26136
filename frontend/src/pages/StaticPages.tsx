@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { UserCircle2 } from 'lucide-react';
 import { Footer } from '../components/Footer';
-import { NoticeTicker } from '../components/landing/NoticeTicker';
 import logoImg from '../assets/maharastraGov.jpeg';
 
 interface StaticPageProps {
@@ -26,7 +25,6 @@ const StaticLayout: React.FC<{ title: string; children: React.ReactNode; onNavig
 
   return (
     <div className="landing-page" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#f8fafc' }}>
-      <NoticeTicker />
       
       <nav className="landing-nav">
         <div className="landing-nav-inner">
