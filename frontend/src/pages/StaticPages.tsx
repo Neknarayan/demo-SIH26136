@@ -443,15 +443,15 @@ export const AboutUsPage: React.FC<StaticPageProps> = ({ onNavigate }) => {
       role: "Frontend & backend",
       color: "#713bf0",
       img: siddharthImg,
-      imgScale: "scale(1.25) translateY(-20%)",
-      imgPos: "center top",
+      imgScale: "scale(1.2)",
+      imgPos: "center 23%",
     },
     {
       name: "Rishab jat",
       role: "Team leader",
       color: "#10b981",
       img: rishabImg,
-      imgPos: "center 25%",
+      imgPos: "center 35%",
     },
     {
       name: "Neknarayan",
@@ -464,6 +464,7 @@ export const AboutUsPage: React.FC<StaticPageProps> = ({ onNavigate }) => {
       role: "frontend",
       color: "#e92929",
       img: surajImg,
+      imgPos: "center 10%",
     },
     {
       name: "Prawin Kumar",
