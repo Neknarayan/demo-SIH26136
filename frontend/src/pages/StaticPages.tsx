@@ -3,10 +3,10 @@ import { UserCircle2 } from "lucide-react";
 import { Footer } from "../components/Footer";
 import logoImg from "../assets/maharastraGov.jpeg";
 import nekImg from "../assets/Nek.jpeg";
-import siddharthImg from "../assets/Siddharth.webp";
+import siddharthImg from "../assets/Siddharth.jpg";
 import rishabImg from "../assets/Rishab.jpeg";
 import surajImg from "../assets/Suraj.jpg";
-import prawinImg from "../assets/Prawin.jpeg";
+import prawinImg from "../assets/Prawin.jpg";
 import vidhiImg from "../assets/Vidhi.jpeg";
 
 interface StaticPageProps {
