@@ -7,7 +7,7 @@ import siddharthImg from "../assets/Siddharth.jpg";
 import rishabImg from "../assets/Rishab.jpeg";
 import surajImg from "../assets/Suraj.jpg";
 import prawinImg from "../assets/Prawin.jpg";
-import vidhiImg from "../assets/Vidhi.jpeg";
+import vidhiImg from "../assets/Vidhi.jpg";
 
 interface StaticPageProps {
   onNavigate: (
