@@ -477,6 +477,8 @@ export const AboutUsPage: React.FC<StaticPageProps> = ({ onNavigate }) => {
       role: "Ml & Corporate Responsibility",
       color: "#c61ae0",
       img: vidhiImg,
+      imgScale: "scale(1.6)",
+      imgPos: "center 180%",
     },
   ];
 
