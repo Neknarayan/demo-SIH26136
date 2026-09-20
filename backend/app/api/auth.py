@@ -41,13 +41,7 @@ def register(payload: UserRegister, db: Session = Depends(get_db)):
     - gov_officer / evaluator → optionally accepts officer_profile / evaluator_profile
                    (stored as user.name / role; extended fields stored as metadata).
     """
-    # 1. Prevent non-startup registration
-    if payload.role not in ("startup",):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Public registration is only available for startups. Officers and evaluators must be invited by an admin."
-        )
-    db_role = "startup"
+    db_role = _ROLE_MAP.get(payload.role, "startup")
 
     # 2. Duplicate email guard (Generic message per Prompt 2)
     if db.query(User).filter(User.email == payload.email).first():
@@ -57,7 +51,7 @@ def register(payload: UserRegister, db: Session = Depends(get_db)):
         )
 
     # 3. Validate role-specific required fields
-    if not payload.startup_profile:
+    if db_role == "startup" and not payload.startup_profile:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="startup_profile (sector, dpiit_status, profile_text) is required for startup registration.",
