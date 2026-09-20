@@ -16,7 +16,7 @@ import type {
   EligibilityResult
 } from '../types';
 
-const API_BASE = 'http://127.0.0.1:8000';
+const API_BASE = 'http://localhost:8000';
 
 class ApiClient {
   private currentUserId: number | null = null;
@@ -108,7 +108,13 @@ class ApiClient {
     if (!res.ok) {
       if (res.status >= 500) throw new Error("Something went wrong. Please try again later.");
       const err = await res.json().catch(() => ({}));
-      throw new Error((err as { detail?: string }).detail || 'Registration failed');
+      const detail = (err as { detail?: string | any }).detail;
+      if (typeof detail === 'string') {
+        throw new Error(detail);
+      } else if (detail && typeof detail === 'object') {
+        throw new Error(JSON.stringify(detail));
+      }
+      throw new Error('Registration failed');
     }
     return res.json() as Promise<TokenResponse>;
   }
@@ -127,7 +133,13 @@ class ApiClient {
     if (!res.ok) {
       if (res.status >= 500) throw new Error("Something went wrong. Please try again later.");
       const err = await res.json().catch(() => ({}));
-      throw new Error((err as { detail?: string }).detail || 'Login failed');
+      const detail = (err as { detail?: string | any }).detail;
+      if (typeof detail === 'string') {
+        throw new Error(detail);
+      } else if (detail && typeof detail === 'object') {
+        throw new Error(JSON.stringify(detail));
+      }
+      throw new Error('Login failed');
     }
     return res.json() as Promise<TokenResponse>;
   }

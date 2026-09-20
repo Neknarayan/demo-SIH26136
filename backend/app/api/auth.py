@@ -58,11 +58,13 @@ def register(payload: UserRegister, db: Session = Depends(get_db)):
         )
 
     # 3. Create user
+    from datetime import datetime, timezone
     user = User(
         name=payload.name,
         email=payload.email,
         role=db_role,
         hashed_password=hash_password(payload.password),
+        created_at=datetime.now(timezone.utc),
     )
     db.add(user)
     db.flush()  # get user.id before committing

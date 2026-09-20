@@ -121,7 +121,7 @@ def upgrade() -> None:
     sa.Column('kpi_id', sa.Integer(), nullable=False),
     sa.Column('submitted_value', sa.Float(), nullable=False),
     sa.Column('description', sa.Text(), nullable=False),
-    sa.Column('submitted_date', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
+    sa.Column('submitted_date', sa.DateTime(), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=False),
     sa.Column('status', sa.String(length=50), nullable=False),
     sa.Column('file_ref', sa.String(length=255), nullable=True),
     sa.ForeignKeyConstraint(['kpi_id'], ['kpis.id'], ondelete='CASCADE'),

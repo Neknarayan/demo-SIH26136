@@ -42,3 +42,4 @@ app.include_router(decisions_router)
 @app.get("/health")
 def health_check():
     return {"status": "ok", "app": settings.APP_NAME, "demo_mode": settings.DEMO_MODE}
+
