@@ -63,14 +63,19 @@ def get_current_user(
     user_id = payload.get("sub")
     if not user_id:
         raise HTTPException(status_code=401, detail="Invalid token payload.")
-    
-    user = db.query(User).filter(User.id == int(user_id)).first()
+
+    try:
+        user_id_int = int(user_id)
+    except (ValueError, TypeError):
+        raise HTTPException(status_code=401, detail="Invalid token payload.")
+
+    user = db.query(User).filter(User.id == user_id_int).first()
     if not user:
         raise HTTPException(status_code=401, detail="User not found.")
-    
+
     if user.status != "active":
         raise HTTPException(status_code=403, detail="Your account is not active.")
-        
+
     return user
 
 def require_role(*allowed_roles: str) -> Callable:

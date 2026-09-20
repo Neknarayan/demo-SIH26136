@@ -1536,6 +1536,17 @@ body {
   align-items: center;
   text-align: center;
   margin-bottom: 28px;
+  min-height: fit-content;
+}
+
+@media (max-width: 360px) {
+  .auth-card-header {
+    padding: 0 8px;
+  }
+
+  .auth-title {
+    font-size: 18px;
+  }
 }
 
 .auth-logo {
@@ -1573,13 +1584,19 @@ body {
 .auth-form {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 16px;
 }
 
 .auth-field {
   display: flex;
   flex-direction: column;
   gap: 6px;
+}
+
+.auth-startup-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .auth-label {
@@ -1699,40 +1716,78 @@ body {
 /* ── Role toggle ─────────────────────────────────────────────────────────── */
 .auth-role-toggle {
   display: flex;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 10px;
-  overflow: hidden;
-  margin-bottom: 22px;
+  gap: 8px;
+  margin-bottom: 16px;
 }
 
-.auth-role-option {
+@media (max-width: 360px) {
+  .auth-role-toggle {
+    flex-direction: column;
+  }
+}
+
+.auth-role-btn {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 7px;
-  padding: 10px;
-  background: #f8fafc;
-  border: none;
-  font-size: 13.5px;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 2px solid;
+  border-radius: 10px;
+  font-size: 14px;
   font-weight: 600;
-  color: #64748b;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s;
+  transition: all 0.2s ease;
+  outline: none;
 }
 
-.auth-role-option + .auth-role-option {
-  border-left: 1.5px solid #e2e8f0;
+.auth-role-btn:focus-visible {
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
 }
 
-.auth-role-option--active {
-  background: #1d4ed8;
-  color: #fff;
+/* Startup button styles */
+.auth-role-btn[data-role="startup"] {
+  background-color: #eff6ff;
+  border-color: #93c5fd;
+  color: #1d4ed8;
 }
 
-.auth-role-option--gov {
-  background: #0f172a;
-  color: #fff;
+.auth-role-btn[data-role="startup"]:hover {
+  background-color: #dbeafe;
+}
+
+.auth-role-btn[data-role="startup"].active {
+  background-color: #1d4ed8;
+  border-color: #1d4ed8;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(29, 78, 216, 0.3);
+}
+
+/* Government Dept button styles */
+.auth-role-btn[data-role="gov_officer"] {
+  background-color: #fff7ed;
+  border-color: #fdba74;
+  color: #9a3412;
+}
+
+.auth-role-btn[data-role="gov_officer"]:hover {
+  background-color: #ffedd5;
+}
+
+.auth-role-btn[data-role="gov_officer"].active {
+  background-color: #c2410c;
+  border-color: #c2410c;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(194, 65, 12, 0.3);
+}
+
+/* Check mark for active state */
+.auth-role-btn.active::after {
+  content: '✓';
+  margin-left: 4px;
+  font-weight: 700;
 }
 
 /* ── JWT bar in dashboard ─────────────────────────────────────────────────── */
@@ -2540,4 +2595,4 @@ body {
   padding: 2px 8px;
   z-index: 2;
 }
-
+

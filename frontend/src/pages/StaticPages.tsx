@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { UserCircle2 } from "lucide-react";
 import { Footer } from "../components/Footer";
-import logoImg from "../assets/maharastraGov.jpeg";
+import logoImg from "../assets/maharashtraGov.jpeg";
 import nekImg from "../assets/Nek.jpeg";
 import siddharthImg from "../assets/Siddharth.jpg";
 import rishabImg from "../assets/Rishab.jpeg";
@@ -440,41 +440,41 @@ export const AboutUsPage: React.FC<StaticPageProps> = ({ onNavigate }) => {
   const teamMembers = [
     {
       name: "Siddharth Pandey",
-      role: "Frontend & backend",
+      role: "Frontend & Backend",
       color: "#713bf0",
       img: siddharthImg,
       imgScale: "scale(1.2)",
       imgPos: "center 23%",
     },
     {
-      name: "Rishab jat",
-      role: "Team leader",
+      name: "Rishab Jat",
+      role: "Team Leader",
       color: "#10b981",
       img: rishabImg,
       imgPos: "center 35%",
     },
     {
       name: "Neknarayan",
-      role: "Backend Developer & Visual artist",
+      role: "Full Stack Developer",
       color: "#3b82f6",
       img: nekImg,
     },
     {
       name: "Suraj Chaurasiya",
-      role: "frontend",
+      role: "Frontend Developer",
       color: "#e92929",
       img: surajImg,
       imgPos: "center 10%",
     },
     {
       name: "Prawin Kumar",
-      role: "Ai/Ml & model traning",
+      role: "AI/ML",
       color: "#06b6d4",
       img: prawinImg,
     },
     {
       name: "Vidhi Jain",
-      role: "Ml & Corporate Responsibility",
+      role: "Corporate Responsibility",
       color: "#c61ae0",
       img: vidhiImg,
       imgScale: "scale(1.6)",

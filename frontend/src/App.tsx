@@ -20,7 +20,7 @@ const DashboardRouter: React.FC = () => {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', gap: 12 }}>
         <Loader2 size={36} className="animate-spin" color="#2563eb" />
-        <div style={{ color: '#64748b', fontSize: 14 }}>Connecting to backend...</div>
+        <div style={{ color: '#64748b', fontSize: 14 }}>Loading your dashboard...</div>
       </div>
     );
   }

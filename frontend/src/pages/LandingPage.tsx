@@ -13,7 +13,7 @@ import {
   Award,
   UserCircle2,
 } from 'lucide-react';
-import logoImg from '../assets/maharastraGov.jpeg';
+import logoImg from '../assets/maharashtraGov.jpeg';
 import { Footer } from '../components/Footer';
 import { HeroBannerSlider } from '../components/landing/HeroBannerSlider';
 import { ActiveProblemStatements } from '../components/landing/ActiveProblemStatements';

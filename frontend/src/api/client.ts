@@ -26,12 +26,25 @@ class ApiClient {
   // ── JWT token management ────────────────────────────────────────────────────
   setToken(token: string | null) {
     this.jwtToken = token;
-    // Note: Prompt 2 requires keeping the token in memory, not localStorage.
-    // So we do not use localStorage.setItem here anymore.
+    // Store in localStorage for persistence across page refreshes
+    if (token) {
+      localStorage.setItem('jwt_token', token);
+    } else {
+      localStorage.removeItem('jwt_token');
+    }
   }
 
   getToken(): string | null {
-    return this.jwtToken;
+    if (this.jwtToken) {
+      return this.jwtToken;
+    }
+    // Try to restore from localStorage
+    const stored = localStorage.getItem('jwt_token');
+    if (stored) {
+      this.jwtToken = stored;
+      return stored;
+    }
+    return null;
   }
 
   private onRefreshed(token: string | null) {

@@ -7,13 +7,17 @@ class Settings(BaseSettings):
     APP_NAME: str = "SIH 26136 Challenge-to-Pilot Lifecycle Platform"
     APP_ENV: Literal["development", "test", "demo", "production"] = "development"
     DEMO_MODE: bool = False
-    
+
     DATABASE_URL: str
-    
+
     JWT_SECRET_KEY: str
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
-    
+
+    # Email domain validation for government registration
+    GOV_EMAIL_DOMAINS: str = "gov.in,nic.in"
+    ALLOW_OPEN_GOV_REGISTRATION: bool = False
+
     CORS_ORIGINS: List[str] = ["http://localhost:5173", "http://127.0.0.1:5173"]
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
