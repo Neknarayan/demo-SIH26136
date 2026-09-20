@@ -2,19 +2,21 @@ import os
 import shutil
 import uuid
 from fastapi import APIRouter, Depends, File, UploadFile, HTTPException, status
-from app.auth import get_current_user_jwt
+from app.auth import get_current_user
 from app.models.user import User
 
-router = APIRouter(prefix="/uploads", tags=["Uploads"])
+router = APIRouter(prefix="/api/uploads", tags=["Uploads"])
 
-UPLOAD_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "uploads")
+UPLOAD_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "uploads")
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+MAX_SIZE = 5 * 1024 * 1024
 ALLOWED_TYPES = {"application/pdf", "image/png", "image/jpeg"}
-MAX_SIZE = 5 * 1024 * 1024  # 5MB
 
 @router.post("")
-def upload_file(
+async def upload_file(
     file: UploadFile = File(...),
-    current_user: User = Depends(get_current_user_jwt)
+    current_user: User = Depends(get_current_user)
 ):
     """
     Secure file upload.

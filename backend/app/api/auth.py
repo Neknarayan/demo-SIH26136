@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 
 from app.auth import (
     create_access_token,
-    get_current_user_jwt,
+    get_current_user,
     hash_password,
     verify_password,
 )
@@ -177,7 +177,7 @@ def login(payload: UserLogin, response: Response, db: Session = Depends(get_db))
 
 # ── GET /api/auth/me ──────────────────────────────────────────────────────────
 @router.get("/me", response_model=UserResponse)
-def get_me(current_user: User = Depends(get_current_user_jwt)):
+def get_me(current_user: User = Depends(get_current_user)):
     """
     Return the JWT-authenticated user's own profile.
     The JWT sub claim encodes the user_id — no ID in the URL.
@@ -190,7 +190,7 @@ def get_me(current_user: User = Depends(get_current_user_jwt)):
 # ── GET /api/auth/me/startup ──────────────────────────────────────────────────
 @router.get("/me/startup", response_model=StartupResponse)
 def get_my_startup_profile(
-    current_user: User = Depends(get_current_user_jwt),
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     """
