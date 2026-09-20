@@ -88,19 +88,17 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate, onSucces
         <div className="auth-role-toggle">
           <button
             type="button"
-            className={`auth-role-option ${role === 'startup' ? 'auth-role-option--active' : ''}`}
+            className={`auth-role-btn ${role === 'startup' ? 'active' : ''}`}
             onClick={() => setRole('startup')}
           >
-            <Rocket size={16} />
-            Startup
+            <Rocket size={16} /> Startup
           </button>
           <button
             type="button"
-            className={`auth-role-option ${role === 'gov_officer' ? 'auth-role-option--active auth-role-option--gov' : ''}`}
+            className={`auth-role-btn ${role === 'gov_officer' ? 'active' : ''}`}
             onClick={() => setRole('gov_officer')}
           >
-            <Building2 size={16} />
-            Government Officer
+            <Building2 size={16} /> Government Dept
           </button>
         </div>
 
@@ -133,7 +131,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate, onSucces
                 autoComplete="email"
                 required
                 className="auth-input"
-                placeholder={role === 'gov_officer' ? 'officer@maharashtra.gov.in' : 'founder@startup.in'}
+                placeholder="founder@startup.in"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
@@ -165,21 +163,6 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate, onSucces
               </button>
             </div>
           </div>
-
-          {role === 'gov_officer' && (
-            <div className="auth-field" style={{ flexDirection: 'row', alignItems: 'center', gap: '8px', marginTop: '12px', padding: '12px', backgroundColor: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-              <input
-                id="reg-evaluator"
-                type="checkbox"
-                checked={isEvaluator}
-                onChange={(e) => setIsEvaluator(e.target.checked)}
-                style={{ width: '16px', height: '16px', cursor: 'pointer' }}
-              />
-              <label htmlFor="reg-evaluator" className="auth-label" style={{ marginBottom: 0, cursor: 'pointer', color: '#1e293b' }}>
-                Register as Independent Evaluator
-              </label>
-            </div>
-          )}
 
           {role === 'startup' && (
             <div className="auth-startup-fields">
@@ -221,6 +204,20 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate, onSucces
                   DPIIT Recognized Startup
                 </label>
               </div>
+            </div>
+          )}
+          
+          {role === 'gov_officer' && (
+            <div className="auth-field" style={{ flexDirection: 'row', alignItems: 'center', gap: '8px', padding: '12px 0' }}>
+              <input
+                id="reg-evaluator"
+                type="checkbox"
+                checked={isEvaluator}
+                onChange={(e) => setIsEvaluator(e.target.checked)}
+              />
+              <label htmlFor="reg-evaluator" className="auth-label" style={{ marginBottom: 0 }}>
+                Register as Technical Evaluator (instead of Officer)
+              </label>
             </div>
           )}
 

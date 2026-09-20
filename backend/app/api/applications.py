@@ -51,6 +51,7 @@ def submit_application(
         startup_id=startup.id,
         challenge_id=app_in.challenge_id,
         proposal_text=app_in.proposal_text,
+        file_url=app_in.file_url,
         status="submitted"
     )
     db.add(application)
@@ -114,11 +115,13 @@ def get_application(
 
     return application
 
+from app.workflows.application import transition_application
+
 @router.patch("/{application_id}/status", response_model=ApplicationResponse)
 def update_application_status(
     application_id: int,
     status_update: ApplicationStatusUpdate,
-    current_user: User = Depends(require_role("officer")),
+    current_user: User = Depends(get_current_user), # role check is inside transition_application
     db: Session = Depends(get_db)
 ):
     """Officer only: update application status (e.g. shortlisted, rejected, under_review)."""
@@ -126,7 +129,8 @@ def update_application_status(
     if not application:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Application not found")
 
-    application.status = status_update.status
+    transition_application(application, status_update.status, current_user)
+    
     db.commit()
     db.refresh(application)
     return application

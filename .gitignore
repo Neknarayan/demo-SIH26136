@@ -3,6 +3,11 @@
 *.env
 .env.local
 
+# Databases and Uploads
+*.db
+*.sqlite
+uploads/
+
 # Python
 __pycache__/
 *.py[cod]

@@ -9,12 +9,17 @@ from app.main import app
 from app.models.user import User
 from app.models.startup import Startup
 
-TEST_DATABASE_URL = "sqlite:///:memory:"
+import os
+
+# Use a test-specific PostgreSQL database to prevent overwriting local dev data
+TEST_DATABASE_URL = os.getenv(
+    "TEST_DATABASE_URL", 
+    "postgresql+psycopg://postgres:8103465077@localhost:5432/sih26136_test"
+)
 
 engine = create_engine(
     TEST_DATABASE_URL,
-    connect_args={"check_same_thread": False},
-    poolclass=StaticPool
+    pool_pre_ping=True
 )
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

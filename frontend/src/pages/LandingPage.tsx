@@ -156,9 +156,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                   Get explainable, rule-based procurement recommendations
                 </li>
               </ul>
-              <button className="landing-feature-card-btn" onClick={() => onNavigate('register')}>
-                Register as Officer
-              </button>
+              <div style={{ marginTop: 'auto', fontSize: '0.85rem', color: '#64748b', fontStyle: 'italic' }}>
+                Note: Officer accounts are provisioned by Department Admins.
+              </div>
             </div>
 
             {/* Col 3: Startups */}

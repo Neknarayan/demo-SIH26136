@@ -1,21 +1,32 @@
-import os
-from pathlib import Path
-from dotenv import load_dotenv
+from typing import Literal, List
+from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import model_validator
+import logging
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-load_dotenv(BASE_DIR / ".env")
-
-class Settings:
-    DATABASE_URL: str = os.getenv(
-        "DATABASE_URL",
-        "postgresql+psycopg://postgres:6X7@localhost:5432/sih_db"
-    )
-    DEMO_MODE: bool = os.getenv("DEMO_MODE", "true").lower() in ("true", "1", "yes")
+class Settings(BaseSettings):
     APP_NAME: str = "SIH 26136 Challenge-to-Pilot Lifecycle Platform"
-
-    # JWT Authentication
-    JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY", "changeme-use-a-strong-random-secret-in-production")
+    APP_ENV: Literal["development", "test", "demo", "production"] = "development"
+    DEMO_MODE: bool = False
+    
+    DATABASE_URL: str
+    
+    JWT_SECRET_KEY: str
     JWT_ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "60"))
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
+    
+    CORS_ORIGINS: List[str] = ["http://localhost:5173", "http://127.0.0.1:5173"]
+
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
+
+    @model_validator(mode='after')
+    def validate_production_settings(self):
+        if self.APP_ENV in ("demo", "production"):
+            if not self.JWT_SECRET_KEY or len(self.JWT_SECRET_KEY) < 32 or self.JWT_SECRET_KEY == "changeme-use-a-strong-random-secret-in-production":
+                raise ValueError("JWT_SECRET_KEY must be a strong secret of at least 32 characters in demo/production.")
+            if "*" in self.CORS_ORIGINS:
+                raise ValueError("CORS_ORIGINS cannot contain '*' in demo/production.")
+            if self.APP_ENV == "production" and self.DEMO_MODE:
+                raise ValueError("DEMO_MODE cannot be true in production.")
+        return self
 
 settings = Settings()

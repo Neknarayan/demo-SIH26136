@@ -123,6 +123,13 @@ export const EvaluatorDashboard: React.FC = () => {
                       <div style={{ fontSize: 13, color: '#475569', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={app.proposal_text}>
                         {app.proposal_text}
                       </div>
+                      {app.file_url && (
+                        <div style={{ marginTop: 6 }}>
+                          <a href={`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${app.file_url}`} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: '#2563eb', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}>
+                            View Proposal PDF
+                          </a>
+                        </div>
+                      )}
                     </td>
                     <td>
                       {isEvaluated ? (
@@ -168,6 +175,13 @@ export const EvaluatorDashboard: React.FC = () => {
                   <p style={{ fontSize: 13, color: '#334155', marginTop: 4, maxHeight: 150, overflowY: 'auto' }}>
                     {selectedApp.proposal_text}
                   </p>
+                  {selectedApp.file_url && (
+                    <div style={{ marginTop: 8 }}>
+                      <a href={`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${selectedApp.file_url}`} target="_blank" rel="noreferrer" style={{ fontSize: 13, color: '#2563eb', fontWeight: 600, textDecoration: 'none' }}>
+                        📥 Download Attached Proposal Document
+                      </a>
+                    </div>
+                  )}
                 </div>
 
                 <div className="form-group">

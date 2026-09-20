@@ -18,6 +18,8 @@ import {
   X
 } from 'lucide-react';
 
+import { FileUpload } from '../common/FileUpload';
+
 export const StartupDashboard: React.FC = () => {
   const { currentUser } = useAuth();
   const [activeTab, setActiveTab] = useState<'challenges' | 'applications' | 'pilot' | 'decision'>('challenges');
@@ -35,11 +37,13 @@ export const StartupDashboard: React.FC = () => {
   const [showApplyModal, setShowApplyModal] = useState(false);
   const [selectedChallenge, setSelectedChallenge] = useState<Challenge | null>(null);
   const [proposalText, setProposalText] = useState('');
+  const [appFileUrl, setAppFileUrl] = useState<string | null>(null);
 
   const [showEvidenceModal, setShowEvidenceModal] = useState(false);
   const [selectedKpi, setSelectedKpi] = useState<KPI | null>(null);
   const [evidenceValue, setEvidenceValue] = useState<number>(0);
   const [evidenceDesc, setEvidenceDesc] = useState('');
+  const [evidenceFileUrl, setEvidenceFileUrl] = useState<string | null>(null);
 
   const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
@@ -106,10 +110,11 @@ export const StartupDashboard: React.FC = () => {
     e.preventDefault();
     if (!selectedChallenge) return;
     try {
-      await api.createApplication(selectedChallenge.id, proposalText);
+      await api.createApplication(selectedChallenge.id, proposalText, appFileUrl);
       showToast('success', 'Application submitted successfully!');
       setShowApplyModal(false);
       setProposalText('');
+      setAppFileUrl(null);
       loadData();
     } catch (err: unknown) {
       showToast('error', err instanceof Error ? err.message : 'Submission failed');
@@ -123,11 +128,13 @@ export const StartupDashboard: React.FC = () => {
       await api.submitEvidence(selectedKpi.id, {
         submitted_value: Number(evidenceValue),
         description: evidenceDesc,
+        file_ref: evidenceFileUrl || undefined
       });
       showToast('success', 'KPI evidence submitted for review!');
       setShowEvidenceModal(false);
       setEvidenceValue(0);
       setEvidenceDesc('');
+      setEvidenceFileUrl(null);
       if (selectedPilot) {
         loadPilotDetails(selectedPilot.id);
       }
@@ -475,6 +482,10 @@ export const StartupDashboard: React.FC = () => {
                     onChange={(e) => setProposalText(e.target.value)}
                   />
                 </div>
+                <FileUpload
+                  label="Attach Proposal Document (PDF, max 5MB)"
+                  onUploadSuccess={(url) => setAppFileUrl(url)}
+                />
               </div>
               <div className="modal-footer">
                 <button type="button" className="btn btn-secondary" onClick={() => setShowApplyModal(false)}>
@@ -524,6 +535,10 @@ export const StartupDashboard: React.FC = () => {
                     onChange={(e) => setEvidenceDesc(e.target.value)}
                   />
                 </div>
+                <FileUpload
+                  label="Attach Evidence Document (PDF/JPG/PNG, max 5MB)"
+                  onUploadSuccess={(url) => setEvidenceFileUrl(url)}
+                />
               </div>
               <div className="modal-footer">
                 <button type="button" className="btn btn-secondary" onClick={() => setShowEvidenceModal(false)}>

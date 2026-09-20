@@ -4,7 +4,6 @@ import { LandingPage } from './pages/LandingPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { FaqPage, TermsPage, PrivacyPage, UserManualPage, AboutUsPage, ContactUsPage } from './pages/StaticPages';
-import { RoleSelector } from './components/RoleSelector';
 import { OfficerDashboard } from './components/OfficerDashboard/OfficerDashboard';
 import { StartupDashboard } from './components/StartupDashboard/StartupDashboard';
 import { EvaluatorDashboard } from './components/EvaluatorDashboard/EvaluatorDashboard';
@@ -13,35 +12,26 @@ import { Loader2, LogOut } from 'lucide-react';
 
 type Page = 'landing' | 'login' | 'register' | 'dashboard' | 'faq' | 'terms' | 'privacy' | 'manual' | 'about' | 'contact';
 
-// ── Dashboard Router (unchanged logic) ───────────────────────────────────────
+// ── Dashboard Router ──────────────────────────────────────────────────────────
 const DashboardRouter: React.FC = () => {
-  const { currentUser, loading, refreshUsers } = useAuth();
-
-  useEffect(() => {
-    refreshUsers();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const { currentUser, loading } = useAuth();
 
   if (loading) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', gap: 12 }}>
         <Loader2 size={36} className="animate-spin" color="#2563eb" />
-        <div style={{ color: '#64748b', fontSize: 14 }}>Connecting to SIH Platform backend &amp; PostgreSQL...</div>
+        <div style={{ color: '#64748b', fontSize: 14 }}>Connecting to backend...</div>
       </div>
     );
   }
 
   if (!currentUser) {
-    return (
-      <div className="empty-state" style={{ margin: '40px auto', maxWidth: 480 }}>
-        <div className="empty-state-title">No Active User Selected</div>
-        <div className="empty-state-sub">Please select a seeded persona from the top navigation bar.</div>
-      </div>
-    );
+    return null;
   }
 
   switch (currentUser.role) {
     case 'officer':
+    case 'admin':
       return <OfficerDashboard key={currentUser.id} />;
     case 'startup':
       return <StartupDashboard key={currentUser.id} />;
@@ -54,17 +44,17 @@ const DashboardRouter: React.FC = () => {
 
 // ── App Shell ────────────────────────────────────────────────────────────────
 const AppShell: React.FC = () => {
-  const { jwtUser, authLoading, logout } = useAuth();
+  const { currentUser, loading: authLoading, logout } = useAuth();
   const [page, setPage] = React.useState<Page>('landing');
 
   // Auto-redirect based on auth state
   useEffect(() => {
-    if (!authLoading && jwtUser && (page === 'landing' || page === 'login' || page === 'register')) {
+    if (!authLoading && currentUser && (page === 'landing' || page === 'login' || page === 'register')) {
       setPage('dashboard');
-    } else if (!authLoading && !jwtUser && page === 'dashboard') {
+    } else if (!authLoading && !currentUser && page === 'dashboard') {
       setPage('login');
     }
-  }, [authLoading, jwtUser, page]);
+  }, [authLoading, currentUser, page]);
 
   if (authLoading) {
     return (
@@ -98,7 +88,7 @@ const AppShell: React.FC = () => {
     return (
       <RegisterPage
         onNavigate={(p) => setPage(p)}
-        onSuccess={() => setPage('dashboard')}
+        onSuccess={() => setPage('login')} // Per prompt 2, registration does not auto-login
       />
     );
   }
@@ -114,19 +104,19 @@ const AppShell: React.FC = () => {
   // Dashboard (authenticated)
   return (
     <div className="app-container">
-      <RoleSelector />
+      {/* RoleSelector completely removed! */}
       {/* JWT user bar + logout */}
-      {jwtUser && (
+      {currentUser && (
         <div className="auth-jwt-bar">
           <span className="auth-jwt-bar-name">
-            Logged in as <strong>{jwtUser.name}</strong>
-            <span className={`gov-role-pill gov-role-${jwtUser.role}`} style={{ marginLeft: 8 }}>
-              {jwtUser.role}
+            Logged in as <strong>{currentUser.name}</strong>
+            <span className={`gov-role-pill gov-role-${currentUser.role}`} style={{ marginLeft: 8 }}>
+              {currentUser.role}
             </span>
           </span>
           <button
             className="auth-logout-btn"
-            onClick={() => { logout(); setPage('landing'); }}
+            onClick={async () => { await logout(); setPage('landing'); }}
           >
             <LogOut size={14} /> Sign Out
           </button>

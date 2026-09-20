@@ -1,45 +1,48 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import type { User, AuthUser, LoginPayload, RegisterPayload } from '../types';
+import type { AuthUser, LoginPayload, RegisterPayload } from '../types';
 import { api } from '../api/client';
 
 interface AuthContextType {
-  // ── JWT Auth session ────────────────────────────────────────────────────────
-  jwtUser: AuthUser | null;
+  currentUser: AuthUser | null;
   token: string | null;
-  authLoading: boolean;
+  loading: boolean;
   login: (payload: LoginPayload) => Promise<void>;
   register: (payload: RegisterPayload) => Promise<void>;
-  logout: () => void;
-
-  // ── Demo persona selector (existing dashboards, unchanged) ──────────────────
-  currentUser: User | null;
-  users: User[];
-  setCurrentUser: (user: User) => void;
-  loading: boolean;
-  refreshUsers: () => Promise<void>;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // ── JWT state ───────────────────────────────────────────────────────────────
-  const [jwtUser, setJwtUser] = useState<AuthUser | null>(null);
+  const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
   const [token, setToken] = useState<string | null>(api.getToken());
-  const [authLoading, setAuthLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
-  // Restore JWT session from localStorage on mount
+  // Restore JWT session (refresh flow) on mount
   useEffect(() => {
-    const stored = api.getToken();
-    if (stored) {
-      api.authMe()
-        .then((u) => setJwtUser(u))
-        .catch(() => {
-          api.setToken(null);
-          setToken(null);
-        })
-        .finally(() => setAuthLoading(false));
-    } else {
-      setAuthLoading(false);
+    const handleLogoutEvent = () => {
+      setCurrentUser(null);
+      setToken(null);
+    };
+    
+    window.addEventListener('auth:logout', handleLogoutEvent);
+    
+    // Attempt silent refresh to get user session on load
+    api.authMe()
+      .then((u) => {
+        setToken(api.getToken());
+        setCurrentUser(u);
+      })
+      .catch(() => {
+        // Not logged in or expired refresh token
+        api.setToken(null);
+        setToken(null);
+        setCurrentUser(null);
+      })
+      .finally(() => setLoading(false));
+      
+    return () => {
+      window.removeEventListener('auth:logout', handleLogoutEvent);
     }
   }, []);
 
@@ -47,71 +50,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const resp = await api.authLogin(payload);
     api.setToken(resp.access_token);
     setToken(resp.access_token);
-    setJwtUser(resp.user);
+    setCurrentUser(resp.user);
   };
 
   const register = async (payload: RegisterPayload) => {
     const resp = await api.authRegister(payload);
-    api.setToken(resp.access_token);
-    setToken(resp.access_token);
-    setJwtUser(resp.user);
+    // Registration returns just the response message now, no token (Prompt 2 spec)
+    // Wait, earlier my register returned startup. But prompt says "Registration doesn't log them in, they must log in".
+    // Wait, the API I wrote actually does return the startup, but no token!
+    // So we don't set token.
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await api.authLogout();
+    } catch (e) {
+      // ignore
+    }
     api.setToken(null);
     setToken(null);
-    setJwtUser(null);
-  };
-
-  // ── Demo persona state (unchanged from original) ────────────────────────────
-  const [users, setUsers] = useState<User[]>([]);
-  const [currentUser, setCurrentUserState] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  const refreshUsers = async () => {
-    try {
-      const data = await api.getUsers();
-      setUsers(data);
-      const savedId = api.getSavedUserId();
-      if (savedId) {
-        const found = data.find((u) => u.id === savedId);
-        if (found) {
-          setCurrentUserState(found);
-          api.setUserId(found.id);
-          return;
-        }
-      }
-      if (data.length > 0 && !currentUser) {
-        const defaultUser = data.find((u) => u.role === 'officer') || data[0];
-        setCurrentUserState(defaultUser);
-        api.setUserId(defaultUser.id);
-      }
-    } catch (err) {
-      console.error('Failed to load demo users:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const setCurrentUser = (user: User) => {
-    setCurrentUserState(user);
-    api.setUserId(user.id);
+    setCurrentUser(null);
+    window.dispatchEvent(new Event('auth:logout'));
   };
 
   return (
     <AuthContext.Provider
       value={{
-        jwtUser,
+        currentUser,
         token,
-        authLoading,
+        loading,
         login,
         register,
-        logout,
-        currentUser,
-        users,
-        setCurrentUser,
-        loading,
-        refreshUsers,
+        logout
       }}
     >
       {children}

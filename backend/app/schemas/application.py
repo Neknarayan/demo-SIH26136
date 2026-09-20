@@ -7,7 +7,7 @@ class ApplicationBase(BaseModel):
     proposal_text: str = Field(..., min_length=10)
 
 class ApplicationCreate(ApplicationBase):
-    pass
+    file_url: str | None = None
 
 class ApplicationStatusUpdate(BaseModel):
     status: str = Field(..., pattern="^(submitted|under_review|shortlisted|rejected)$")
@@ -18,6 +18,7 @@ class ApplicationResponse(BaseModel):
     challenge_id: int
     proposal_text: str
     status: str
+    file_url: str | None = None
     startup: StartupResponse | None = None
     evaluation: EvaluationResponse | None = None
 

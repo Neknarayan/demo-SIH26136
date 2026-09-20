@@ -10,6 +10,7 @@ class Application(Base):
     challenge_id: Mapped[int] = mapped_column(Integer, ForeignKey("challenges.id", ondelete="CASCADE"), nullable=False)
     proposal_text: Mapped[str] = mapped_column(Text, nullable=False)
     status: Mapped[str] = mapped_column(String(50), default="submitted", nullable=False)  # submitted, under_review, shortlisted, rejected
+    file_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
 
     __table_args__ = (
         UniqueConstraint("startup_id", "challenge_id", name="uq_application_startup_challenge"),

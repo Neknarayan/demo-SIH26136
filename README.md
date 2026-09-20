@@ -15,6 +15,9 @@ A demo-ready MVP enabling an end-to-end innovation procurement and pilot deploym
 
 ## Tech Stack
 - **Frontend**: React, Vite, TypeScript, Custom CSS
-- **Backend**: Python 3.14, FastAPI, SQLAlchemy 2.0, Pydantic v2, Uvicorn
-- **Database**: PostgreSQL 18 with Alembic migrations
+- **Backend**: Python 3.11/3.12, FastAPI, SQLAlchemy 2.0, Pydantic v2, Uvicorn
+- **Database**: PostgreSQL with Alembic migrations
 - **Testing**: Pytest
+
+## Getting Started
+Please see the [TEAM_SETUP_GUIDE.md](./TEAM_SETUP_GUIDE.md) for the Docker-first installation instructions. You can have the entire system running in under 10 minutes.

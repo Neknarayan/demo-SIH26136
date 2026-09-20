@@ -16,38 +16,31 @@ import type {
   EligibilityResult
 } from '../types';
 
-const API_BASE = 'http://localhost:8000';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 class ApiClient {
-  private currentUserId: number | null = null;
-  private jwtToken: string | null = localStorage.getItem('sih_jwt_token');
+  private jwtToken: string | null = null;
+  private isRefreshing = false;
+  private refreshSubscribers: ((token: string | null) => void)[] = [];
 
   // ── JWT token management ────────────────────────────────────────────────────
   setToken(token: string | null) {
     this.jwtToken = token;
-    if (token) {
-      localStorage.setItem('sih_jwt_token', token);
-    } else {
-      localStorage.removeItem('sih_jwt_token');
-    }
+    // Note: Prompt 2 requires keeping the token in memory, not localStorage.
+    // So we do not use localStorage.setItem here anymore.
   }
 
   getToken(): string | null {
     return this.jwtToken;
   }
 
-  setUserId(id: number | null) {
-    this.currentUserId = id;
-    if (id) {
-      localStorage.setItem('sih_demo_user_id', String(id));
-    } else {
-      localStorage.removeItem('sih_demo_user_id');
-    }
+  private onRefreshed(token: string | null) {
+    this.refreshSubscribers.forEach(cb => cb(token));
+    this.refreshSubscribers = [];
   }
 
-  getSavedUserId(): number | null {
-    const saved = localStorage.getItem('sih_demo_user_id');
-    return saved ? parseInt(saved, 10) : null;
+  private addRefreshSubscriber(cb: (token: string | null) => void) {
+    this.refreshSubscribers.push(cb);
   }
 
   private async request<T>(path: string, options: RequestInit = {}): Promise<T> {
@@ -56,8 +49,8 @@ class ApiClient {
       ...(options.headers as Record<string, string> || {}),
     };
 
-    if (this.currentUserId) {
-      headers['X-User-Id'] = String(this.currentUserId);
+    if (this.jwtToken) {
+      headers['Authorization'] = `Bearer ${this.jwtToken}`;
     }
 
     let response: Response;
@@ -68,6 +61,52 @@ class ApiClient {
       });
     } catch (err) {
       throw new Error("Unable to connect to the server. Please check your internet connection.");
+    }
+
+    if (response.status === 401 && path !== '/api/auth/login' && path !== '/api/auth/refresh') {
+      if (!this.isRefreshing) {
+        this.isRefreshing = true;
+        try {
+          // Attempt silent refresh
+          const refreshRes = await fetch(`${API_BASE}/api/auth/refresh`, {
+            method: 'POST',
+            // send cookies for refresh token
+            credentials: 'include'
+          });
+          if (refreshRes.ok) {
+            const data = await refreshRes.json();
+            this.setToken(data.access_token);
+            this.onRefreshed(data.access_token);
+          } else {
+            this.setToken(null);
+            this.onRefreshed(null);
+            window.dispatchEvent(new Event('auth:logout'));
+          }
+        } catch (e) {
+          this.setToken(null);
+          this.onRefreshed(null);
+          window.dispatchEvent(new Event('auth:logout'));
+        } finally {
+          this.isRefreshing = false;
+        }
+      }
+      
+      return new Promise<T>((resolve, reject) => {
+        this.addRefreshSubscriber(async (token) => {
+          if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+            try {
+              const retryRes = await fetch(`${API_BASE}${path}`, { ...options, headers });
+              if (retryRes.ok) resolve(retryRes.json());
+              else reject(new Error('Retry failed'));
+            } catch (e) {
+              reject(e);
+            }
+          } else {
+            reject(new Error("Session expired. Please log in again."));
+          }
+        });
+      });
     }
 
     if (!response.ok) {
@@ -164,6 +203,17 @@ class ApiClient {
     return res.json() as Promise<AuthUser>;
   }
 
+  async authLogout(): Promise<void> {
+    try {
+      await fetch(`${API_BASE}/api/auth/logout`, {
+        method: 'POST',
+        credentials: 'include'
+      });
+    } catch (e) {
+      // ignore network errors on logout
+    }
+  }
+
   // Users
   getUsers(): Promise<User[]> {
     return this.request<User[]>('/users');
@@ -212,12 +262,13 @@ class ApiClient {
     return this.request<Application[]>(`/applications${qs}`);
   }
 
-  createApplication(challengeId: number, proposalText: string): Promise<Application> {
+  createApplication(challengeId: number, proposalText: string, fileUrl?: string | null): Promise<Application> {
     return this.request<Application>('/applications', {
       method: 'POST',
       body: JSON.stringify({
         challenge_id: challengeId,
         proposal_text: proposalText,
+        file_url: fileUrl,
       }),
     });
   }
