@@ -77,6 +77,7 @@ export interface Application {
   challenge_id: number;
   proposal_text: string;
   status: 'submitted' | 'under_review' | 'shortlisted' | 'rejected';
+  file_url?: string | null;
   startup?: Startup;
   evaluation?: Evaluation;
 }

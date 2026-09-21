@@ -1,6 +1,6 @@
 import React from "react";
 import { ExternalLink } from "lucide-react";
-import logoImg from "../assets/maharastraGov.jpeg";
+import logoImg from "../assets/maharashtraGov.jpeg";
 interface FooterProps {
   onNavigate?: (page: 'landing' | 'faq' | 'terms' | 'privacy' | 'manual' | any) => void;
 }

@@ -6,6 +6,8 @@ from app.models.user import User
 from app.schemas.challenge import ChallengeCreate, ChallengeResponse
 from app.auth import get_current_user, require_role
 
+from app.policies.challenge import enforce_can_view
+
 router = APIRouter(prefix="/challenges", tags=["Challenges"])
 
 @router.post("", response_model=ChallengeResponse, status_code=status.HTTP_201_CREATED)
@@ -17,6 +19,7 @@ def create_challenge(
     """Officer only: create an innovation challenge."""
     challenge = Challenge(
         officer_id=current_user.id,
+        department_id=current_user.department_id,
         title=challenge_in.title,
         description=challenge_in.description,
         outcomes=challenge_in.outcomes,
@@ -24,7 +27,7 @@ def create_challenge(
         budget_band=challenge_in.budget_band,
         required_sector=challenge_in.required_sector,
         dpiit_required=challenge_in.dpiit_required,
-        status=challenge_in.status
+        status="draft" # All new challenges start as draft
     )
     db.add(challenge)
     db.commit()
@@ -51,4 +54,32 @@ def get_challenge(
     challenge = db.query(Challenge).filter(Challenge.id == challenge_id).first()
     if not challenge:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Challenge not found")
+        
+    enforce_can_view(current_user, challenge)
+    return challenge
+
+from app.workflows.challenge import transition_challenge
+from pydantic import BaseModel
+
+class ChallengeStatusUpdate(BaseModel):
+    status: str
+
+@router.patch("/{challenge_id}/status", response_model=ChallengeResponse)
+def update_challenge_status(
+    challenge_id: int,
+    status_update: ChallengeStatusUpdate,
+    current_user: User = Depends(require_role("officer")),
+    db: Session = Depends(get_db)
+):
+    challenge = db.query(Challenge).filter(Challenge.id == challenge_id).first()
+    if not challenge:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Challenge not found")
+        
+    from app.policies.challenge import enforce_can_edit
+    enforce_can_edit(current_user, challenge)
+    
+    transition_challenge(challenge, status_update.status, current_user)
+    
+    db.commit()
+    db.refresh(challenge)
     return challenge

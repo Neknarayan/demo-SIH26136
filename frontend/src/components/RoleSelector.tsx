@@ -1,7 +1,7 @@
 import React from "react";
 import { useAuth } from "../context/AuthContext";
 import { Shield, Sparkles, Award, UserCheck } from "lucide-react";
-import logoImg from "../assets/maharastraGov.jpeg";
+import logoImg from "../assets/maharashtraGov.jpeg";
 export const RoleSelector: React.FC = () => {
   const { users, currentUser, setCurrentUser } = useAuth();
 

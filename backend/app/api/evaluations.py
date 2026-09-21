@@ -50,6 +50,18 @@ def get_evaluations(
     db: Session = Depends(get_db)
 ):
     query = db.query(Evaluation)
+    
+    if current_user.role == "startup":
+        # Startups should not see internal evaluation notes/scores
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to view evaluations.")
+    elif current_user.role == "evaluator":
+        # Evaluators only see their own
+        query = query.filter(Evaluation.evaluator_id == current_user.id)
+    elif current_user.role == "officer":
+        # Officers only see evaluations for challenges in their department
+        from app.models.challenge import Challenge
+        query = query.join(Application).join(Challenge).filter(Challenge.department_id == current_user.department_id)
+
     if application_id:
         query = query.filter(Evaluation.application_id == application_id)
     return query.all()

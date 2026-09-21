@@ -18,6 +18,7 @@ class UserResponse(UserBase):
 
 class StartupProfile(BaseModel):
     """Extra fields collected during startup registration."""
+    startup_name: str
     sector: str
     dpiit_status: bool = False
     profile_text: str
@@ -27,21 +28,16 @@ class OfficerProfile(BaseModel):
     department: Optional[str] = None
     designation: Optional[str] = None
 
-class EvaluatorProfile(BaseModel):
-    """Extra fields for evaluator registration."""
-    expertise: Optional[str] = None
-
 class UserRegister(BaseModel):
     name: str
     email: EmailStr
     password: str
-    role: Literal["startup", "gov_officer", "evaluator"]
+    role: Literal["startup", "gov_officer"]
 
     # Role-specific sub-profiles (each optional at schema level;
     # validated programmatically per role in the endpoint)
     startup_profile: Optional[StartupProfile] = None
     officer_profile: Optional[OfficerProfile] = None
-    evaluator_profile: Optional[EvaluatorProfile] = None
 
 class UserLogin(BaseModel):
     email: EmailStr

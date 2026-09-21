@@ -57,10 +57,8 @@ def seed_database():
         # Check if users already exist
         existing_users = db.query(User).count()
         if existing_users > 0:
-            print("Database already contains user records. Skipping seed or refreshing...")
-            # Still ensure all users have passwords set
+            print("Database already contains user records, but forcing seed anyway...")
             set_demo_passwords(db)
-            return
 
         print("Seeding demo users...")
         hashed_pw = hash_password(DEFAULT_DEMO_PASSWORD)
@@ -109,28 +107,29 @@ def seed_database():
         db.commit()
 
         # Seed Startups (profile rows)
-        startup1 = Startup(
+        # Create startups
+        s1 = Startup(
             user_id=user_startup1.id,
             name="AquaSense Technologies",
             sector="Water Technology",
             dpiit_status=True,
             profile_text="AI & IoT acoustic telemetry sensors for municipal water loss reduction and non-revenue water minimization."
         )
-        startup2 = Startup(
+        s2 = Startup(
             user_id=user_startup2.id,
             name="JalTrack Innovations",
             sector="Water Technology",
             dpiit_status=True,
             profile_text="Smart ultrasonic clamp-on flow meters with solar cellular gateways for district metered area (DMA) telemetry."
         )
-        startup3 = Startup(
+        s3 = Startup(
             user_id=user_startup3.id,
             name="HydroVision Labs",
             sector="CleanTech",
             dpiit_status=False,
             profile_text="Autonomous surface inspection cameras and computer vision models analyzing canal turbidity and open-channel flow."
         )
-        startup4 = Startup(
+        s4 = Startup(
             user_id=user_startup4.id,
             name="EcoUrban Systems",
             sector="Urban Infrastructure",
@@ -138,7 +137,7 @@ def seed_database():
             profile_text="Decentralized greywater filtration units with automated membrane cleaning and cloud-monitored water quality sensors."
         )
 
-        db.add_all([startup1, startup2, startup3, startup4])
+        db.add_all([s1, s2, s3, s4])
         db.commit()
 
         # Seed Challenges

@@ -395,6 +395,13 @@ export const OfficerDashboard: React.FC = () => {
                         <div style={{ fontSize: 13, color: '#475569', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={app.proposal_text}>
                           {app.proposal_text}
                         </div>
+                        {app.file_url && (
+                          <div style={{ marginTop: 6 }}>
+                            <a href={`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${app.file_url}`} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: '#2563eb', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}>
+                              <FileText size={12} /> View Document
+                            </a>
+                          </div>
+                        )}
                         {app.evaluation?.notes && (
                           <div style={{ fontSize: 11, color: '#64748b', marginTop: 4 }}>
                             <strong>Evaluator Notes:</strong> {app.evaluation.notes}
@@ -570,7 +577,16 @@ export const OfficerDashboard: React.FC = () => {
                                 <td style={{ fontWeight: 700 }}>#{ev.id}</td>
                                 <td style={{ fontWeight: 600 }}>{kpi?.name || `KPI #${ev.kpi_id}`}</td>
                                 <td style={{ fontWeight: 800 }}>{ev.submitted_value} {kpi?.unit}</td>
-                                <td>{ev.description}</td>
+                                <td>
+                                  <div>{ev.description}</div>
+                                  {ev.file_ref && (
+                                    <div style={{ marginTop: 6 }}>
+                                      <a href={`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${ev.file_ref}`} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: '#2563eb', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}>
+                                        <FileText size={12} /> View Evidence Document
+                                      </a>
+                                    </div>
+                                  )}
+                                </td>
                                 <td><StatusBadge status={ev.status} /></td>
                                 <td>
                                   {ev.status === 'pending' ? (

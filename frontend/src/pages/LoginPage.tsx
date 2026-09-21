@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Mail, Lock, Eye, EyeOff, Loader2, LogIn } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import logoImg from '../assets/maharastraGov.jpeg';
+import logoImg from '../assets/maharashtraGov.jpeg';
 
 interface LoginPageProps {
   onNavigate: (page: 'landing' | 'register') => void;

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { User, Mail, Lock, Eye, EyeOff, Loader2, UserPlus, Building2, Rocket } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import logoImg from '../assets/maharastraGov.jpeg';
+import type { RegisterPayload } from '../types';
+import logoImg from '../assets/maharashtraGov.jpeg';
 
 interface RegisterPageProps {
   onNavigate: (page: 'landing' | 'login') => void;
@@ -21,23 +22,22 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate, onSucces
   const [loading, setLoading] = useState(false);
 
   // Startup profile fields
+  const [startupName, setStartupName] = useState('');
   const [sector, setSector] = useState('');
   const [dpiitStatus, setDpiitStatus] = useState(false);
   const [profileText, setProfileText] = useState('');
-  
-  const [isEvaluator, setIsEvaluator] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    
+
     if (!name.trim() || !email.trim() || !password.trim()) {
       setError('Please fill in all required fields.');
       return;
     }
-    
+
     if (role === 'startup') {
-      if (!sector.trim() || !profileText.trim()) {
+      if (!startupName.trim() || !sector.trim() || !profileText.trim()) {
         setError('Please fill in all startup profile fields.');
         return;
       }
@@ -49,10 +49,10 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate, onSucces
     }
     setLoading(true);
     try {
-      const actualRole = role === 'gov_officer' && isEvaluator ? 'evaluator' : role;
-      const payload: any = { name, email, password, role: actualRole };
+      const payload: RegisterPayload = { name, email, password, role };
       if (role === 'startup') {
         payload.startup_profile = {
+          startup_name: startupName,
           sector,
           dpiit_status: dpiitStatus,
           profile_text: profileText
@@ -64,6 +64,16 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate, onSucces
       setError(err instanceof Error ? err.message : 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      setRole(role === 'startup' ? 'gov_officer' : 'startup');
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      setRole(role === 'startup' ? 'gov_officer' : 'startup');
     }
   };
 
@@ -85,22 +95,28 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate, onSucces
         )}
 
         {/* Role Toggle */}
-        <div className="auth-role-toggle">
+        <div className="auth-role-toggle" role="radiogroup" aria-label="Select registration role" onKeyDown={handleKeyDown}>
           <button
             type="button"
-            className={`auth-role-option ${role === 'startup' ? 'auth-role-option--active' : ''}`}
+            className={`auth-role-btn ${role === 'startup' ? 'active' : ''}`}
+            data-role="startup"
             onClick={() => setRole('startup')}
+            role="radio"
+            aria-checked={role === 'startup'}
+            tabIndex={role === 'startup' ? 0 : -1}
           >
-            <Rocket size={16} />
-            Startup
+            <Rocket size={16} /> Startup
           </button>
           <button
             type="button"
-            className={`auth-role-option ${role === 'gov_officer' ? 'auth-role-option--active auth-role-option--gov' : ''}`}
+            className={`auth-role-btn ${role === 'gov_officer' ? 'active' : ''}`}
+            data-role="gov_officer"
             onClick={() => setRole('gov_officer')}
+            role="radio"
+            aria-checked={role === 'gov_officer'}
+            tabIndex={role === 'gov_officer' ? 0 : -1}
           >
-            <Building2 size={16} />
-            Government Officer
+            <Building2 size={16} /> Government Dept
           </button>
         </div>
 
@@ -133,7 +149,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate, onSucces
                 autoComplete="email"
                 required
                 className="auth-input"
-                placeholder={role === 'gov_officer' ? 'officer@maharashtra.gov.in' : 'founder@startup.in'}
+                placeholder="founder@startup.in"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
@@ -166,23 +182,22 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate, onSucces
             </div>
           </div>
 
-          {role === 'gov_officer' && (
-            <div className="auth-field" style={{ flexDirection: 'row', alignItems: 'center', gap: '8px', marginTop: '12px', padding: '12px', backgroundColor: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-              <input
-                id="reg-evaluator"
-                type="checkbox"
-                checked={isEvaluator}
-                onChange={(e) => setIsEvaluator(e.target.checked)}
-                style={{ width: '16px', height: '16px', cursor: 'pointer' }}
-              />
-              <label htmlFor="reg-evaluator" className="auth-label" style={{ marginBottom: 0, cursor: 'pointer', color: '#1e293b' }}>
-                Register as Independent Evaluator
-              </label>
-            </div>
-          )}
-
           {role === 'startup' && (
             <div className="auth-startup-fields">
+              <div className="auth-field">
+                <label htmlFor="reg-startup-name" className="auth-label">Startup Name</label>
+                <input
+                  id="reg-startup-name"
+                  type="text"
+                  required
+                  className="auth-input"
+                  placeholder="Your startup company name"
+                  value={startupName}
+                  onChange={(e) => setStartupName(e.target.value)}
+                  style={{ paddingLeft: '12px' }}
+                />
+              </div>
+
               <div className="auth-field">
                 <label htmlFor="reg-sector" className="auth-label">Sector</label>
                 <input
@@ -206,7 +221,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate, onSucces
                   placeholder="Describe your startup..."
                   value={profileText}
                   onChange={(e) => setProfileText(e.target.value)}
-                  style={{ paddingLeft: '12px', minHeight: '60px', paddingTop: '8px' }}
+                  style={{ paddingLeft: '12px', minHeight: '96px', paddingTop: '8px', resize: 'vertical' }}
                 />
               </div>
 
@@ -223,6 +238,8 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate, onSucces
               </div>
             </div>
           )}
+          
+
 
           <button type="submit" className="auth-submit-btn" disabled={loading}>
             {loading ? (
