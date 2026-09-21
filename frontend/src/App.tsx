@@ -31,7 +31,6 @@ const DashboardRouter: React.FC = () => {
 
   switch (currentUser.role) {
     case 'officer':
-    case 'admin':
       return <OfficerDashboard key={currentUser.id} />;
     case 'startup':
       return <StartupDashboard key={currentUser.id} />;

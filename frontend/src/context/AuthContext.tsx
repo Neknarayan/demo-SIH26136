@@ -54,7 +54,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const register = async (payload: RegisterPayload) => {
-    const resp = await api.authRegister(payload);
+    await api.authRegister(payload);
     // Registration returns just the response message now, no token (Prompt 2 spec)
     // Wait, earlier my register returned startup. But prompt says "Registration doesn't log them in, they must log in".
     // Wait, the API I wrote actually does return the startup, but no token!
