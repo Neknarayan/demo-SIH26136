@@ -11,14 +11,15 @@ from app.models.startup import Startup
 
 import os
 
-# Use a test-specific PostgreSQL database to prevent overwriting local dev data
+# Use a test-specific SQLite database since PostgreSQL is not running
 TEST_DATABASE_URL = os.getenv(
     "TEST_DATABASE_URL", 
-    "postgresql+psycopg://postgres:8103465077@localhost:5432/sih26136_test"
+    "sqlite:///./test.db"
 )
 
 engine = create_engine(
     TEST_DATABASE_URL,
+    connect_args={"check_same_thread": False},
     pool_pre_ping=True
 )
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -69,5 +70,13 @@ def client(db):
 
     app.dependency_overrides[get_db] = override_get_db
     with TestClient(app) as test_client:
+        
+        # Helper to inject JWT token
+        def get_auth_headers(user_id: int):
+            from app.auth import create_access_token
+            token = create_access_token({"sub": str(user_id)})
+            return {"Authorization": f"Bearer {token}"}
+            
+        test_client.auth_headers = get_auth_headers
         yield test_client
     app.dependency_overrides.clear()

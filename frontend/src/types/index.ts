@@ -26,6 +26,7 @@ export interface RegisterPayload {
   password: string;
   role: 'startup' | 'gov_officer';
   startup_profile?: {
+    startup_name: string;
     sector: string;
     dpiit_status: boolean;
     profile_text: string;

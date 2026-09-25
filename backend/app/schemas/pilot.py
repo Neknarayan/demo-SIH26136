@@ -27,20 +27,26 @@ class PilotResponse(PilotBase):
     application: dict | None = None
 
     @model_validator(mode="before")
+    @classmethod
     def populate_application_dict(cls, values):
-        if hasattr(values, "application") and values.application:
+        if hasattr(values, "application") and getattr(values, "application"):
             app_obj = values.application
-            startup_obj = app_obj.startup
-            challenge_obj = app_obj.challenge
+            startup_obj = getattr(app_obj, "startup", None)
+            challenge_obj = getattr(app_obj, "challenge", None)
             app_dict = {
                 "id": app_obj.id,
                 "startup": {"name": startup_obj.name, "dpiit_status": startup_obj.dpiit_status} if startup_obj else {},
                 "challenge": {"title": challenge_obj.title} if challenge_obj else {}
             }
-            if isinstance(values, dict):
-                values["application"] = app_dict
+            if not isinstance(values, dict):
+                # Convert ORM to dict to avoid mutating ORM state
+                d = {c.name: getattr(values, c.name) for c in values.__table__.columns}
+                d["kpis"] = getattr(values, "kpis", [])
+                d["decision"] = getattr(values, "decision", None)
+                d["application"] = app_dict
+                return d
             else:
-                values.application = app_dict
+                values["application"] = app_dict
         return values
 
     model_config = ConfigDict(from_attributes=True)

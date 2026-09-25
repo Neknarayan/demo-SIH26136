@@ -14,13 +14,13 @@ def transition_application(application: Application, target_status: str, user: U
     # submitted -> under_review (evaluator)
     # under_review -> rejected (officer) | accepted (officer)
     
-    if current == "submitted" and target_status == "under_review":
-        if user.role not in ("evaluator", "admin"):
-            raise HTTPException(status_code=403, detail="Only evaluators can begin reviewing.")
+    if current == "submitted" and target_status in ("under_review", "shortlisted", "rejected"):
+        if user.role not in ("officer", "evaluator", "admin"):
+            raise HTTPException(status_code=403, detail="Not authorized to change status.")
         application.status = target_status
         return
         
-    if current == "under_review" and target_status in ("rejected", "accepted"):
+    if current == "under_review" and target_status in ("rejected", "shortlisted"):
         if user.role not in ("officer", "admin"):
             raise HTTPException(status_code=403, detail="Only officers can make final decisions.")
         application.status = target_status

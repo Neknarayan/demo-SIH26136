@@ -27,7 +27,7 @@ def create_challenge(
         budget_band=challenge_in.budget_band,
         required_sector=challenge_in.required_sector,
         dpiit_required=challenge_in.dpiit_required,
-        status="draft" # All new challenges start as draft
+        status=challenge_in.status
     )
     db.add(challenge)
     db.commit()
