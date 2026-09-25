@@ -44,6 +44,7 @@ app.include_router(decisions_router)
 app.include_router(uploads_router)
 
 upload_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "uploads")
+os.makedirs(upload_dir, exist_ok=True)
 app.mount("/static/uploads", StaticFiles(directory=upload_dir), name="uploads")
 
 @app.get("/health")
