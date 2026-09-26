@@ -13,7 +13,8 @@ import type {
   Evidence,
   Decision,
   DecisionSupport,
-  EligibilityResult
+  EligibilityResult,
+  AIMatchResponse
 } from '../types';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
@@ -367,6 +368,11 @@ class ApiClient {
       method: 'POST',
       body: JSON.stringify({ recommendation, notes }),
     });
+  }
+
+  // AI Matching Microservice
+  getAIMatchingRecommendations(challengeId: number, topN: number = 10): Promise<AIMatchResponse> {
+    return this.request<AIMatchResponse>(`/api/matching/recommendations/${challengeId}?top_n=${topN}`);
   }
 }
 

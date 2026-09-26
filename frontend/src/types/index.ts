@@ -138,3 +138,24 @@ export interface EligibilityResult {
   dpiit_message: string;
   guidance: string;
 }
+
+export interface RecommendationItem {
+  startup_id: number;
+  startup_name: string;
+  rank: number;
+  final_score: number;
+  semantic_score: number;
+  technology_match: number;
+  sector_match: number;
+  experience_score: number;
+  budget_score: number;
+  location_score: number;
+  reasons: string[];
+}
+
+export interface AIMatchResponse {
+  challenge_id: number;
+  challenge_title: string;
+  recommendations: RecommendationItem[];
+  ai_service_online?: boolean;
+}

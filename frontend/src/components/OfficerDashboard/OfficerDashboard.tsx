@@ -3,6 +3,7 @@ import { api } from '../../api/client';
 import type { Challenge, Application, Pilot, KPI, Evidence, DecisionSupport } from '../../types';
 import { StatusBadge } from '../StatusBadge';
 import { DecisionSupportCard } from '../DecisionSupportCard';
+import { AIMatchingCard } from './AIMatchingCard';
 import {
   PlusCircle,
   FileText,
@@ -18,6 +19,7 @@ import {
 export const OfficerDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'overview' | 'challenges' | 'applications' | 'pilots' | 'decision'>('overview');
   const [challenges, setChallenges] = useState<Challenge[]>([]);
+  const [selectedChallengeId, setSelectedChallengeId] = useState<number>(1);
   const [applications, setApplications] = useState<Application[]>([]);
   const [pilots, setPilots] = useState<Pilot[]>([]);
   const [selectedPilot, setSelectedPilot] = useState<Pilot | null>(null);
@@ -324,26 +326,42 @@ export const OfficerDashboard: React.FC = () => {
 
       {/* CHALLENGES TAB */}
       {activeTab === 'challenges' && (
-        <div className="card-grid">
-          {challenges.map((c) => (
-            <div key={c.id} className="content-card">
-              <div className="content-card-header">
-                <h3 className="card-title">{c.title}</h3>
-                <StatusBadge status={c.status} />
-              </div>
-              <div className="card-body">
-                <p style={{ marginBottom: 12 }}>{c.description}</p>
-                <div className="card-meta">
-                  <span className="meta-chip">Sector: {c.required_sector}</span>
-                  <span className="meta-chip">Budget: {c.budget_band}</span>
-                  <span className="meta-chip">DPIIT: {c.dpiit_required ? 'Required' : 'Optional'}</span>
+        <div>
+          <div className="card-grid">
+            {challenges.map((c) => (
+              <div 
+                key={c.id} 
+                className="content-card"
+                style={{
+                  border: selectedChallengeId === c.id ? '2px solid #6366f1' : undefined,
+                  cursor: 'pointer'
+                }}
+                onClick={() => setSelectedChallengeId(c.id)}
+              >
+                <div className="content-card-header">
+                  <h3 className="card-title">{c.title}</h3>
+                  <StatusBadge status={c.status} />
                 </div>
-                <div style={{ fontSize: 13, marginTop: 8 }}>
-                  <strong>Expected Outcomes:</strong> {c.outcomes}
+                <div className="card-body">
+                  <p style={{ marginBottom: 12 }}>{c.description}</p>
+                  <div className="card-meta">
+                    <span className="meta-chip">Sector: {c.required_sector}</span>
+                    <span className="meta-chip">Budget: {c.budget_band}</span>
+                    <span className="meta-chip">DPIIT: {c.dpiit_required ? 'Required' : 'Optional'}</span>
+                  </div>
+                  <div style={{ fontSize: 13, marginTop: 8 }}>
+                    <strong>Expected Outcomes:</strong> {c.outcomes}
+                  </div>
+                  <div style={{ marginTop: 12, fontSize: 12, color: selectedChallengeId === c.id ? '#6366f1' : '#64748b', fontWeight: 600 }}>
+                    {selectedChallengeId === c.id ? '✓ Selected for AI Matching' : 'Click to analyze with AI Matcher →'}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+
+          {/* AI Matching Card Section */}
+          <AIMatchingCard challengeId={selectedChallengeId || (challenges[0]?.id || 1)} />
         </div>
       )}
 
