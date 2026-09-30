@@ -11,6 +11,8 @@ from app.models.decision import Decision
 from app.models.refresh_token import RefreshToken
 from app.models.department import Department
 from app.models.audit_log import AuditLog
+from app.models.milestone import Milestone
+from app.models.invoice import Invoice
 
 __all__ = [
     "Base",
@@ -26,4 +28,6 @@ __all__ = [
     "RefreshToken",
     "Department",
     "AuditLog",
+    "Milestone",
+    "Invoice",
 ]

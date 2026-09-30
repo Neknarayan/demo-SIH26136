@@ -1,4 +1,5 @@
-from sqlalchemy import Integer, String, Text, ForeignKey, UniqueConstraint
+from datetime import datetime
+from sqlalchemy import Integer, String, Text, ForeignKey, UniqueConstraint, DateTime, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import Base
 
@@ -11,6 +12,7 @@ class Application(Base):
     proposal_text: Mapped[str] = mapped_column(Text, nullable=False)
     status: Mapped[str] = mapped_column(String(50), default="submitted", nullable=False)  # submitted, under_review, shortlisted, rejected
     file_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
     __table_args__ = (
         UniqueConstraint("startup_id", "challenge_id", name="uq_application_startup_challenge"),

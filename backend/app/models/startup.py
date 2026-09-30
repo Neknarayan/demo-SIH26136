@@ -12,6 +12,9 @@ class Startup(Base):
     sector: Mapped[str] = mapped_column(String(100), nullable=False)
     dpiit_status: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     profile_text: Mapped[str] = mapped_column(Text, nullable=False)
+    msme_reg_no: Mapped[str | None] = mapped_column(String(30), nullable=True)
+    women_led: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    make_in_india_class: Mapped[str | None] = mapped_column(String(20), nullable=True)  # 'class_1', 'class_2', or None
 
     # Relationships
     user = relationship("User", back_populates="startup")

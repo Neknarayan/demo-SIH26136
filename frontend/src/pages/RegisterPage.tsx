@@ -21,11 +21,13 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate, onSucces
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Startup profile fields
   const [startupName, setStartupName] = useState('');
   const [sector, setSector] = useState('');
   const [dpiitStatus, setDpiitStatus] = useState(false);
   const [profileText, setProfileText] = useState('');
+  const [msmeRegNo, setMsmeRegNo] = useState('');
+  const [womenLed, setWomenLed] = useState(false);
+  const [makeInIndiaClass, setMakeInIndiaClass] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,7 +57,10 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate, onSucces
           startup_name: startupName,
           sector,
           dpiit_status: dpiitStatus,
-          profile_text: profileText
+          profile_text: profileText,
+          msme_reg_no: msmeRegNo || undefined,
+          women_led: womenLed,
+          make_in_india_class: makeInIndiaClass || null
         };
       }
       await register(payload);
@@ -235,6 +240,46 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate, onSucces
                 <label htmlFor="reg-dpiit" className="auth-label" style={{ marginBottom: 0 }}>
                   DPIIT Recognized Startup
                 </label>
+              </div>
+
+              <div className="auth-field">
+                <label htmlFor="reg-msme" className="auth-label">MSME / Udyam Registration Number (Optional)</label>
+                <input
+                  id="reg-msme"
+                  type="text"
+                  className="auth-input"
+                  placeholder="UDYAM-XX-00-0000000"
+                  value={msmeRegNo}
+                  onChange={(e) => setMsmeRegNo(e.target.value)}
+                  style={{ paddingLeft: '12px' }}
+                />
+              </div>
+
+              <div className="auth-field" style={{ flexDirection: 'row', alignItems: 'center', gap: '8px' }}>
+                <input
+                  id="reg-women-led"
+                  type="checkbox"
+                  checked={womenLed}
+                  onChange={(e) => setWomenLed(e.target.checked)}
+                />
+                <label htmlFor="reg-women-led" className="auth-label" style={{ marginBottom: 0 }}>
+                  Women-Led Startup (≥51% owned by women)
+                </label>
+              </div>
+
+              <div className="auth-field">
+                <label htmlFor="reg-mii-class" className="auth-label">Make in India Classification</label>
+                <select
+                  id="reg-mii-class"
+                  className="auth-input"
+                  value={makeInIndiaClass}
+                  onChange={(e) => setMakeInIndiaClass(e.target.value)}
+                  style={{ paddingLeft: '12px' }}
+                >
+                  <option value="">Not Specified</option>
+                  <option value="class_1">Class-I Local Supplier (≥50% local content)</option>
+                  <option value="class_2">Class-II Local Supplier (20-50% local content)</option>
+                </select>
               </div>
             </div>
           )}

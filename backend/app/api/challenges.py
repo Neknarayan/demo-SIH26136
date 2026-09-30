@@ -1,14 +1,25 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from pydantic import BaseModel
 from app.database import get_db
 from app.models.challenge import Challenge
 from app.models.user import User
 from app.schemas.challenge import ChallengeCreate, ChallengeResponse
 from app.auth import get_current_user, require_role
-
 from app.policies.challenge import enforce_can_view
+from app.workflows.challenge import transition_challenge
 
 router = APIRouter(prefix="/challenges", tags=["Challenges"])
+
+@router.get("/public", response_model=list[ChallengeResponse])
+def list_public_challenges(db: Session = Depends(get_db)):
+    """Public endpoint — no auth required. Returns all published challenges for the landing page."""
+    return (
+        db.query(Challenge)
+        .filter(Challenge.status == "published")
+        .order_by(Challenge.id.desc())
+        .all()
+    )
 
 @router.post("", response_model=ChallengeResponse, status_code=status.HTTP_201_CREATED)
 def create_challenge(
@@ -57,9 +68,6 @@ def get_challenge(
         
     enforce_can_view(current_user, challenge)
     return challenge
-
-from app.workflows.challenge import transition_challenge
-from pydantic import BaseModel
 
 class ChallengeStatusUpdate(BaseModel):
     status: str

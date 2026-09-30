@@ -40,6 +40,7 @@ def create_pilot(
         scope=pilot_in.scope,
         timeline_start=pilot_in.timeline_start,
         timeline_end=pilot_in.timeline_end,
+        total_budget=pilot_in.total_budget,
         status="planned"
     )
     db.add(pilot)
@@ -54,6 +55,7 @@ def list_pilots(
 ):
     query = db.query(Pilot).options(
         joinedload(Pilot.kpis),
+        joinedload(Pilot.milestones),
         joinedload(Pilot.decision),
         joinedload(Pilot.application).joinedload(Application.startup),
         joinedload(Pilot.application).joinedload(Application.challenge)
@@ -75,6 +77,7 @@ def get_pilot(
 ):
     pilot = db.query(Pilot).options(
         joinedload(Pilot.kpis),
+        joinedload(Pilot.milestones),
         joinedload(Pilot.decision),
         joinedload(Pilot.application).joinedload(Application.startup),
         joinedload(Pilot.application).joinedload(Application.challenge)

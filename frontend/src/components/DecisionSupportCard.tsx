@@ -67,7 +67,7 @@ export const DecisionSupportCard: React.FC<DecisionSupportCardProps> = ({
 
       {decisionRecorded && (
         <div style={{ fontSize: 12, color: '#38bdf8', textAlign: 'center', fontWeight: 600 }}>
-          ✓ Final Decision Recorded in PostgreSQL
+          ✓ Final Decision Recorded
         </div>
       )}
     </div>

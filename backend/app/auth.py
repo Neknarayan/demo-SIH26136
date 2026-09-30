@@ -1,13 +1,12 @@
 """
 app/auth.py — Strong authentication helpers (Prompt 2).
 """
-import secrets
 from datetime import datetime, timedelta, timezone
 from typing import Callable
 
 import jwt
 import bcrypt
-from fastapi import Depends, HTTPException, status, Request
+from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.orm import Session
 

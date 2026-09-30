@@ -1,4 +1,4 @@
-from fastapi import HTTPException, status
+from fastapi import HTTPException
 from app.models.challenge import Challenge
 from app.models.user import User
 

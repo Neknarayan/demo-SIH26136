@@ -1,6 +1,6 @@
 import httpx
-from fastapi import APIRouter, HTTPException, Query, Depends
-from typing import Optional, List, Dict, Any
+from fastapi import APIRouter, HTTPException, Query
+from typing import Optional, List
 from pydantic import BaseModel
 import logging
 

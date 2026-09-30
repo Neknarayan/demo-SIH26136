@@ -1,11 +1,11 @@
 /**
- * ActiveProblemStatements.tsx — Filterable live challenges & RFP feed
+ * ActiveProblemStatements.tsx — Live challenges & RFP feed from the database
  *
- * Shows active government procurement challenges with deadline countdowns.
- * Filters: Department, Stage, Grant Budget (range).
- * Each card: department badge, title, deadline countdown, grant amount, CTA.
+ * Fetches published challenges from GET /challenges/public (no auth).
+ * Maps real Challenge fields to the card UI.
+ * Filters: Sector, Status, DPIIT Required.
  */
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Filter,
   Clock,
@@ -14,133 +14,50 @@ import {
   ArrowRight,
   AlertCircle,
   CheckCircle2,
+  Loader2,
 } from 'lucide-react';
 
-// ── Types ────────────────────────────────────────────────────────────────────
-export type ChallengeStage = 'Open for Bids' | 'Under Review' | 'Closed';
-
-export interface ProblemStatement {
-  id: string;
-  department: string;
+// ── Types ─────────────────────────────────────────────────────────────────────
+interface Challenge {
+  id: number;
   title: string;
   description: string;
-  stage: ChallengeStage;
-  /** ISO date string */
-  deadline: string;
-  /** e.g. "₹25L – ₹50L" */
-  grantBudget: string;
-  /** Numeric upper bound in lakhs for range filtering */
-  grantMaxLakh: number;
-  dpiitRequired: boolean;
-  rfpLink: string;
+  budget_band: string;
+  required_sector: string;
+  dpiit_required: boolean;
+  status: string;         // 'published' | 'draft' | 'closed'
+  deadline: string | null;
+  created_at: string | null;
 }
 
-// ── Static demo data ─────────────────────────────────────────────────────────
-const DEMO_CHALLENGES: ProblemStatement[] = [
-  {
-    id: 'PS-001',
-    department: 'Urban Development',
-    title: 'Smart Water Monitoring for Municipal Networks',
-    description:
-      'Deploy IoT sensor telemetry to detect non-revenue water loss and monitor pipeline pressure across urban distribution grids.',
-    stage: 'Open for Bids',
-    deadline: '2026-10-15',
-    grantBudget: '₹25L – ₹50L',
-    grantMaxLakh: 50,
-    dpiitRequired: true,
-    rfpLink: '#rfp-ps001',
-  },
-  {
-    id: 'PS-002',
-    department: 'Agriculture',
-    title: 'AI-Driven Crop Disease Early Warning System',
-    description:
-      'Satellite + ground-sensor fusion model to provide district-level crop disease advisories 14 days in advance.',
-    stage: 'Open for Bids',
-    deadline: '2026-10-28',
-    grantBudget: '₹10L – ₹25L',
-    grantMaxLakh: 25,
-    dpiitRequired: false,
-    rfpLink: '#rfp-ps002',
-  },
-  {
-    id: 'PS-003',
-    department: 'Health',
-    title: 'Rural Telemedicine & Diagnostic Kiosk Network',
-    description:
-      'Solar-powered kiosks with AI-assisted diagnostics for primary health indicators in sub-district health centres.',
-    stage: 'Under Review',
-    deadline: '2026-09-30',
-    grantBudget: '₹50L – ₹1Cr',
-    grantMaxLakh: 100,
-    dpiitRequired: true,
-    rfpLink: '#rfp-ps003',
-  },
-  {
-    id: 'PS-004',
-    department: 'Urban Development',
-    title: 'Automated Road Distress and Pothole Mapping',
-    description:
-      'Edge-AI computer vision on municipal vehicles to classify road degradations and generate geo-tagged maintenance alerts.',
-    stage: 'Open for Bids',
-    deadline: '2026-11-10',
-    grantBudget: '₹10L – ₹25L',
-    grantMaxLakh: 25,
-    dpiitRequired: false,
-    rfpLink: '#rfp-ps004',
-  },
-  {
-    id: 'PS-005',
-    department: 'Agriculture',
-    title: 'Soil Moisture & Micronutrient Telemetry Platform',
-    description:
-      'Low-cost IoT sensors reporting real-time soil health parameters to a state agriculture cloud dashboard.',
-    stage: 'Under Review',
-    deadline: '2026-09-25',
-    grantBudget: '₹10L – ₹25L',
-    grantMaxLakh: 25,
-    dpiitRequired: false,
-    rfpLink: '#rfp-ps005',
-  },
-  {
-    id: 'PS-006',
-    department: 'Health',
-    title: 'Cold Chain Integrity Monitoring for Vaccine Logistics',
-    description:
-      'Blockchain-anchored temperature and tamper-detection sensors across the state vaccine cold chain.',
-    stage: 'Open for Bids',
-    deadline: '2026-10-20',
-    grantBudget: '₹25L – ₹50L',
-    grantMaxLakh: 50,
-    dpiitRequired: true,
-    rfpLink: '#rfp-ps006',
-  },
-];
+// Map backend status → display label
+function stageLabel(status: string): string {
+  if (status === 'published') return 'Open for Bids';
+  if (status === 'closed') return 'Closed';
+  return 'Under Review';
+}
 
-const ALL_DEPARTMENTS = ['All', ...Array.from(new Set(DEMO_CHALLENGES.map((c) => c.department)))];
-const ALL_STAGES: ('All' | ChallengeStage)[] = ['All', 'Open for Bids', 'Under Review'];
-const BUDGET_BANDS = [
-  { label: 'All Budgets', max: Infinity },
-  { label: 'Up to ₹25L', max: 25 },
-  { label: 'Up to ₹50L', max: 50 },
-  { label: 'Above ₹50L', max: Infinity, min: 51 },
-];
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-function daysUntil(isoDate: string): number {
+// ── Helpers ──────────────────────────────────────────────────────────────────
+function daysUntil(isoDate: string | null): number | null {
+  if (!isoDate) return null;
   const now = new Date();
   const target = new Date(isoDate);
   return Math.ceil((target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
 }
 
-function DeadlineBadge({ deadline }: { deadline: string }) {
+function DeadlineBadge({ deadline }: { deadline: string | null }) {
   const days = daysUntil(deadline);
-  const urgent = days <= 7;
-  const expired = days < 0;
-
-  if (expired) {
-    return <span className="aps-deadline aps-deadline--expired"><AlertCircle size={12} /> Closed</span>;
+  if (days === null) {
+    return <span className="aps-deadline">No Deadline Set</span>;
   }
+  if (days < 0) {
+    return (
+      <span className="aps-deadline aps-deadline--expired">
+        <AlertCircle size={12} /> Closed
+      </span>
+    );
+  }
+  const urgent = days <= 7;
   return (
     <span className={`aps-deadline ${urgent ? 'aps-deadline--urgent' : ''}`}>
       <Clock size={12} />
@@ -149,32 +66,52 @@ function DeadlineBadge({ deadline }: { deadline: string }) {
   );
 }
 
-const STAGE_COLORS: Record<ChallengeStage, string> = {
-  'Open for Bids': 'aps-stage--open',
-  'Under Review': 'aps-stage--review',
-  'Closed': 'aps-stage--closed',
-};
-
 // ── Component ─────────────────────────────────────────────────────────────────
 interface ActiveProblemStatementsProps {
-  onApply?: (ps: ProblemStatement) => void;
+  onApply?: () => void;
 }
 
 export const ActiveProblemStatements: React.FC<ActiveProblemStatementsProps> = ({ onApply }) => {
-  const [dept, setDept] = useState('All');
-  const [stage, setStage] = useState<'All' | ChallengeStage>('All');
-  const [budgetIdx, setBudgetIdx] = useState(0);
+  const [challenges, setChallenges] = useState<Challenge[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Filters
+  const [sector, setSector] = useState('All');
+  const [dpiitFilter, setDpiitFilter] = useState<'All' | 'Required' | 'Not Required'>('All');
+
+  // ── Fetch published challenges (public, no auth) ──────────────────────────
+  useEffect(() => {
+    const API_BASE = import.meta.env.VITE_API_URL || '';
+    fetch(`${API_BASE}/challenges/public`)
+      .then((res) => {
+        if (!res.ok) throw new Error(`Server error: ${res.status}`);
+        return res.json();
+      })
+      .then((data: Challenge[]) => {
+        setChallenges(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(err.message || 'Failed to load challenges');
+        setLoading(false);
+      });
+  }, []);
+
+  // ── Derived filter options from real data ─────────────────────────────────
+  const allSectors = useMemo(
+    () => ['All', ...Array.from(new Set(challenges.map((c) => c.required_sector)))],
+    [challenges]
+  );
 
   const filtered = useMemo(() => {
-    const band = BUDGET_BANDS[budgetIdx];
-    return DEMO_CHALLENGES.filter((c) => {
-      if (dept !== 'All' && c.department !== dept) return false;
-      if (stage !== 'All' && c.stage !== stage) return false;
-      if (c.grantMaxLakh > band.max) return false;
-      if ('min' in band && c.grantMaxLakh < (band as { min: number }).min) return false;
+    return challenges.filter((c) => {
+      if (sector !== 'All' && c.required_sector !== sector) return false;
+      if (dpiitFilter === 'Required' && !c.dpiit_required) return false;
+      if (dpiitFilter === 'Not Required' && c.dpiit_required) return false;
       return true;
     });
-  }, [dept, stage, budgetIdx]);
+  }, [challenges, sector, dpiitFilter]);
 
   return (
     <section id="problems" className="aps-root">
@@ -184,99 +121,129 @@ export const ActiveProblemStatements: React.FC<ActiveProblemStatementsProps> = (
           Live procurement challenges open for startup bids across Maharashtra departments
         </p>
 
-        {/* Filters */}
-        <div className="aps-filters">
-          <div className="aps-filter-group">
-            <Filter size={14} className="aps-filter-icon" />
-            <select
-              className="aps-select"
-              value={dept}
-              onChange={(e) => setDept(e.target.value)}
-              aria-label="Filter by department"
-            >
-              {ALL_DEPARTMENTS.map((d) => (
-                <option key={d} value={d}>{d}</option>
-              ))}
-            </select>
+        {/* Loading */}
+        {loading && (
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 10, padding: '60px 0', color: '#64748b' }}>
+            <Loader2 size={22} style={{ animation: 'spin 1s linear infinite' }} />
+            <span>Loading live challenges…</span>
           </div>
+        )}
 
-          <div className="aps-filter-group">
-            <select
-              className="aps-select"
-              value={stage}
-              onChange={(e) => setStage(e.target.value as typeof stage)}
-              aria-label="Filter by stage"
-            >
-              {ALL_STAGES.map((s) => (
-                <option key={s} value={s}>{s}</option>
-              ))}
-            </select>
-          </div>
-
-          <div className="aps-filter-group">
-            <IndianRupee size={14} className="aps-filter-icon" />
-            <select
-              className="aps-select"
-              value={budgetIdx}
-              onChange={(e) => setBudgetIdx(Number(e.target.value))}
-              aria-label="Filter by grant budget"
-            >
-              {BUDGET_BANDS.map((b, i) => (
-                <option key={i} value={i}>{b.label}</option>
-              ))}
-            </select>
-          </div>
-
-          <span className="aps-count">{filtered.length} challenge{filtered.length !== 1 ? 's' : ''}</span>
-        </div>
-
-        {/* Cards */}
-        {filtered.length === 0 ? (
+        {/* Error */}
+        {error && (
           <div className="aps-empty">
             <AlertCircle size={32} />
-            <p>No challenges match the current filters.</p>
+            <p>Could not load challenges: {error}</p>
+            <p style={{ fontSize: '0.85rem', color: '#94a3b8' }}>Make sure the backend server is running.</p>
           </div>
-        ) : (
-          <div className="aps-grid">
-            {filtered.map((ps) => (
-              <article key={ps.id} className="aps-card">
-                {/* Header row */}
-                <div className="aps-card-header">
-                  <span className="aps-dept-badge">
-                    <Tag size={11} /> {ps.department}
-                  </span>
-                  <span className={`aps-stage ${STAGE_COLORS[ps.stage]}`}>{ps.stage}</span>
-                </div>
+        )}
 
-                {/* Title & description */}
-                <h3 className="aps-card-title">{ps.title}</h3>
-                <p className="aps-card-desc">{ps.description}</p>
-
-                {/* Meta row */}
-                <div className="aps-card-meta">
-                  <div className="aps-meta-item">
-                    <IndianRupee size={13} />
-                    <span>Grant: <strong>{ps.grantBudget}</strong></span>
-                  </div>
-                  <DeadlineBadge deadline={ps.deadline} />
-                  {ps.dpiitRequired && (
-                    <span className="aps-dpiit-badge">
-                      <CheckCircle2 size={11} /> DPIIT Required
-                    </span>
-                  )}
-                </div>
-
-                {/* CTA */}
-                <a
-                  href={ps.rfpLink}
-                  className="aps-cta-btn"
-                  onClick={(e) => { if (onApply) { e.preventDefault(); onApply(ps); } }}
+        {/* Loaded */}
+        {!loading && !error && (
+          <>
+            {/* Filters */}
+            <div className="aps-filters">
+              <div className="aps-filter-group">
+                <Filter size={14} className="aps-filter-icon" />
+                <select
+                  className="aps-select"
+                  value={sector}
+                  onChange={(e) => setSector(e.target.value)}
+                  aria-label="Filter by sector"
                 >
-                  Apply / View RFP <ArrowRight size={14} />
-                </a>
-              </article>
-            ))}
-          </div>
+                  {allSectors.map((s) => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="aps-filter-group">
+                <CheckCircle2 size={14} className="aps-filter-icon" />
+                <select
+                  className="aps-select"
+                  value={dpiitFilter}
+                  onChange={(e) => setDpiitFilter(e.target.value as typeof dpiitFilter)}
+                  aria-label="Filter by DPIIT requirement"
+                >
+                  {(['All', 'Required', 'Not Required'] as const).map((s) => (
+                    <option key={s} value={s}>{s === 'All' ? 'DPIIT: Any' : `DPIIT ${s}`}</option>
+                  ))}
+                </select>
+              </div>
+
+              <span className="aps-count">
+                {filtered.length} challenge{filtered.length !== 1 ? 's' : ''}
+              </span>
+            </div>
+
+            {/* Empty state */}
+            {filtered.length === 0 && (
+              <div className="aps-empty">
+                <AlertCircle size={32} />
+                <p>
+                  {challenges.length === 0
+                    ? 'No challenges have been published yet. Check back soon!'
+                    : 'No challenges match the current filters.'}
+                </p>
+              </div>
+            )}
+
+            {/* Cards */}
+            {filtered.length > 0 && (
+              <div className="aps-grid">
+                {filtered.map((c) => {
+                  const stage = stageLabel(c.status);
+                  const stageClass =
+                    c.status === 'published' ? 'aps-stage--open' :
+                    c.status === 'closed' ? 'aps-stage--closed' :
+                    'aps-stage--review';
+
+                  return (
+                    <article key={c.id} className="aps-card">
+                      {/* Header */}
+                      <div className="aps-card-header">
+                        <span className="aps-dept-badge">
+                          <Tag size={11} /> {c.required_sector}
+                        </span>
+                        <span className={`aps-stage ${stageClass}`}>{stage}</span>
+                      </div>
+
+                      {/* Title & description */}
+                      <h3 className="aps-card-title">{c.title}</h3>
+                      <p className="aps-card-desc">{c.description}</p>
+
+                      {/* Meta row */}
+                      <div className="aps-card-meta">
+                        <div className="aps-meta-item">
+                          <IndianRupee size={13} />
+                          <span>Budget: <strong>{c.budget_band}</strong></span>
+                        </div>
+                        <DeadlineBadge deadline={c.deadline} />
+                        {c.dpiit_required && (
+                          <span className="aps-dpiit-badge">
+                            <CheckCircle2 size={11} /> DPIIT Required
+                          </span>
+                        )}
+                        {c.created_at && (
+                          <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+                            Added: {new Date(c.created_at).toLocaleDateString('en-IN')}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* CTA */}
+                      <button
+                        className="aps-cta-btn"
+                        onClick={onApply}
+                      >
+                        Apply / View Details <ArrowRight size={14} />
+                      </button>
+                    </article>
+                  );
+                })}
+              </div>
+            )}
+          </>
         )}
       </div>
     </section>

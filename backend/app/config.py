@@ -1,7 +1,6 @@
 from typing import Literal, List
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import model_validator
-import logging
 
 class Settings(BaseSettings):
     APP_NAME: str = "SIH 26136 Challenge-to-Pilot Lifecycle Platform"

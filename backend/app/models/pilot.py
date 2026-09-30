@@ -1,4 +1,5 @@
-from sqlalchemy import Integer, String, Text, Date, ForeignKey, CheckConstraint
+from decimal import Decimal
+from sqlalchemy import Integer, String, Text, Date, ForeignKey, CheckConstraint, Numeric
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import Base
 
@@ -21,3 +22,5 @@ class Pilot(Base):
     kpis = relationship("KPI", back_populates="pilot", cascade="all, delete-orphan")
     evidence_records = relationship("Evidence", back_populates="pilot", cascade="all, delete-orphan")
     decision = relationship("Decision", back_populates="pilot", uselist=False, cascade="all, delete-orphan")
+    total_budget: Mapped[Decimal | None] = mapped_column(Numeric(15, 2), nullable=True)
+    milestones = relationship("Milestone", back_populates="pilot", cascade="all, delete-orphan")

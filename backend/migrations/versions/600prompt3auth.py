@@ -47,11 +47,14 @@ def upgrade() -> None:
     )
 
     op.add_column('users', sa.Column('department_id', sa.Integer(), nullable=True))
-    op.create_foreign_key('fk_users_department', 'users', 'departments', ['department_id'], ['id'])
+    bind = op.get_bind()
+    if bind.engine.name != 'sqlite':
+        op.create_foreign_key('fk_users_department', 'users', 'departments', ['department_id'], ['id'])
     
     op.add_column('challenges', sa.Column('department_id', sa.Integer(), nullable=True))
     op.add_column('challenges', sa.Column('deadline', sa.DateTime(timezone=True), nullable=True))
-    op.create_foreign_key('fk_challenges_department', 'challenges', 'departments', ['department_id'], ['id'])
+    if bind.engine.name != 'sqlite':
+        op.create_foreign_key('fk_challenges_department', 'challenges', 'departments', ['department_id'], ['id'])
 
 
 def downgrade() -> None:

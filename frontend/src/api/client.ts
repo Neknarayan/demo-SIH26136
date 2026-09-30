@@ -14,10 +14,12 @@ import type {
   Decision,
   DecisionSupport,
   EligibilityResult,
-  AIMatchResponse
+  AIMatchResponse,
+  Milestone,
+  Invoice
 } from '../types';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+const API_BASE = import.meta.env.VITE_API_URL || '';
 
 class ApiClient {
   private jwtToken: string | null = null;
@@ -373,6 +375,44 @@ class ApiClient {
   // AI Matching Microservice
   getAIMatchingRecommendations(challengeId: number, topN: number = 10): Promise<AIMatchResponse> {
     return this.request<AIMatchResponse>(`/api/matching/recommendations/${challengeId}?top_n=${topN}`);
+  }
+
+  // Milestones
+  listMilestones(pilotId: number): Promise<Milestone[]> {
+    return this.request<Milestone[]>(`/pilots/${pilotId}/milestones`);
+  }
+
+  createMilestone(pilotId: number, data: { name: string; description: string; percentage_of_budget: number; due_date: string }): Promise<Milestone> {
+    return this.request<Milestone>(`/pilots/${pilotId}/milestones`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  releaseMilestone(milestoneId: number, release_notes?: string): Promise<Milestone> {
+    return this.request<Milestone>(`/milestones/${milestoneId}/release`, {
+      method: 'PATCH',
+      body: JSON.stringify({ release_notes }),
+    });
+  }
+
+  // Invoices
+  submitInvoice(milestoneId: number, data: { amount: number; description: string; file_url?: string | null }): Promise<Invoice> {
+    return this.request<Invoice>(`/milestones/${milestoneId}/invoices`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  listInvoices(milestoneId: number): Promise<Invoice[]> {
+    return this.request<Invoice[]>(`/milestones/${milestoneId}/invoices`);
+  }
+
+  reviewInvoice(milestoneId: number, invoiceId: number, data: { status: 'approved' | 'rejected'; review_notes?: string }): Promise<Invoice> {
+    return this.request<Invoice>(`/milestones/${milestoneId}/invoices/${invoiceId}/review`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
   }
 }
 

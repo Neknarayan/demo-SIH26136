@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 
 import { FileUpload } from '../common/FileUpload';
+import { FileViewerModal } from '../common/FileViewerModal';
 
 export const StartupDashboard: React.FC = () => {
   const { currentUser } = useAuth();
@@ -41,9 +42,20 @@ export const StartupDashboard: React.FC = () => {
 
   const [showEvidenceModal, setShowEvidenceModal] = useState(false);
   const [selectedKpi, setSelectedKpi] = useState<KPI | null>(null);
-  const [evidenceValue, setEvidenceValue] = useState<number>(0);
+  const [evidenceValue, setEvidenceValue] = useState<number | string>('');
   const [evidenceDesc, setEvidenceDesc] = useState('');
   const [evidenceFileUrl, setEvidenceFileUrl] = useState<string | null>(null);
+
+  const [appFileError, setAppFileError] = useState('');
+  const [touched, setTouched] = useState<{proposal?: boolean}>({});
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [viewingFile, setViewingFile] = useState<string | null>(null);
+
+  const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+  const [selectedMilestone, setSelectedMilestone] = useState<any>(null);
+  const [invoiceAmount, setInvoiceAmount] = useState<number>(0);
+  const [invoiceDesc, setInvoiceDesc] = useState('');
+  const [invoiceFileUrl, setInvoiceFileUrl] = useState<string | null>(null);
 
   const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
@@ -106,18 +118,58 @@ export const StartupDashboard: React.FC = () => {
     loadData();
   }, [currentUser]);
 
-  const handleApply = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleApply = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     if (!selectedChallenge) return;
+    if (!appFileUrl) {
+      setAppFileError('A proposal document (PDF) is required.');
+      return;
+    }
     try {
       await api.createApplication(selectedChallenge.id, proposalText, appFileUrl);
       showToast('success', 'Application submitted successfully!');
       setShowApplyModal(false);
+      setShowConfirmModal(false);
       setProposalText('');
       setAppFileUrl(null);
+      setAppFileError('');
+      setTouched({});
       loadData();
     } catch (err: unknown) {
       showToast('error', err instanceof Error ? err.message : 'Submission failed');
+    }
+  };
+
+  const handleSubmitInvoice = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedMilestone) return;
+    try {
+      await api.submitInvoice(selectedMilestone.id, {
+        amount: invoiceAmount,
+        description: invoiceDesc,
+        file_url: invoiceFileUrl
+      });
+      showToast('success', 'Invoice submitted successfully!');
+      setShowInvoiceModal(false);
+      setInvoiceAmount(0);
+      setInvoiceDesc('');
+      setInvoiceFileUrl(null);
+      if (selectedPilot) {
+        // Just reload pilot data
+        const [kpis, evidence, ds, pilotsData] = await Promise.all([
+          api.getPilotKpis(selectedPilot.id),
+          api.getPilotEvidence(selectedPilot.id),
+          api.getDecisionSupport(selectedPilot.id),
+          api.getPilots()
+        ]);
+        setPilotKpis(kpis);
+        setPilotEvidence(evidence);
+        setDecisionSupport(ds);
+        const updated = pilotsData.find(p => p.id === selectedPilot.id);
+        if (updated) setSelectedPilot(updated);
+      }
+    } catch (err: unknown) {
+      showToast('error', err instanceof Error ? err.message : 'Failed to submit invoice');
     }
   };
 
@@ -132,7 +184,7 @@ export const StartupDashboard: React.FC = () => {
       });
       showToast('success', 'KPI evidence submitted for review!');
       setShowEvidenceModal(false);
-      setEvidenceValue(0);
+      setEvidenceValue('');
       setEvidenceDesc('');
       setEvidenceFileUrl(null);
       if (selectedPilot) {
@@ -191,7 +243,14 @@ export const StartupDashboard: React.FC = () => {
             return (
               <div key={c.id} className="content-card">
                 <div className="content-card-header">
-                  <h3 className="card-title">{c.title}</h3>
+                  <h3 className="card-title">
+                    {c.title}
+                    {c.created_at && (
+                      <span style={{ fontSize: 12, color: '#64748b', fontWeight: 400, marginLeft: 8 }}>
+                        (Added on: {new Date(c.created_at).toLocaleDateString()})
+                      </span>
+                    )}
+                  </h3>
                   <StatusBadge status={c.status} />
                 </div>
                 <div className="card-body">
@@ -277,22 +336,46 @@ export const StartupDashboard: React.FC = () => {
                   const challenge = challenges.find((c) => c.id === app.challenge_id);
                   return (
                     <tr key={app.id}>
-                      <td style={{ fontWeight: 700 }}>#{app.id}</td>
+                      <td style={{ fontWeight: 700 }}>
+                        #{app.id}
+                        {app.created_at && (
+                          <div style={{ fontSize: 11, color: '#64748b', fontWeight: 400, marginTop: 4 }}>
+                            (Submitted on: {new Date(app.created_at).toLocaleDateString()})
+                          </div>
+                        )}
+                      </td>
                       <td style={{ fontWeight: 600 }}>{challenge?.title || `Challenge #${app.challenge_id}`}</td>
                       <td><StatusBadge status={app.status} /></td>
                       <td>
                         {app.evaluation ? (
-                          <span style={{ fontWeight: 800, color: app.evaluation.score >= 70 ? '#10b981' : '#f59e0b' }}>
-                            {app.evaluation.score} / 100
-                          </span>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                            <span style={{ fontWeight: 800, color: app.evaluation.score >= 70 ? '#10b981' : '#f59e0b' }}>
+                              {app.evaluation.score} / 100
+                            </span>
+                            {app.evaluation.created_at && (
+                              <div style={{ fontSize: 11, color: '#64748b' }}>
+                                (Reviewed on: {new Date(app.evaluation.created_at).toLocaleDateString()})
+                              </div>
+                            )}
+                          </div>
                         ) : (
                           <span style={{ color: '#94a3b8', fontStyle: 'italic' }}>Pending Evaluation</span>
                         )}
                       </td>
                       <td style={{ maxWidth: 300 }}>
-                        <div style={{ fontSize: 13, color: '#475569', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <div style={{ fontSize: 13, color: '#475569', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
                           {app.proposal_text}
                         </div>
+                        {app.file_url && (
+                          <div style={{ marginTop: 6 }}>
+                            <button
+                              onClick={() => setViewingFile(app.file_url || null)}
+                              style={{ background: 'none', border: 'none', padding: 0, fontSize: 12, color: '#2563eb', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}
+                            >
+                              <FileText size={12} /> View Document
+                            </button>
+                          </div>
+                        )}
                       </td>
                       <td style={{ fontSize: 12, color: '#64748b' }}>
                         {app.evaluation?.notes || 'No review notes yet.'}
@@ -439,6 +522,77 @@ export const StartupDashboard: React.FC = () => {
                     </tbody>
                   </table>
                 </div>
+                {/* Milestones & Invoices panel */}
+                <div className="content-card">
+                  <h3 className="card-title" style={{ marginBottom: 16 }}>Milestones & Invoices</h3>
+                  {(!selectedPilot.milestones || selectedPilot.milestones.length === 0) ? (
+                    <div style={{ fontSize: 14, color: '#64748b', fontStyle: 'italic' }}>
+                      No milestones defined yet by the officer.
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                      {selectedPilot.milestones.map((m) => (
+                        <div key={m.id} style={{ padding: 16, border: '1px solid #e2e8f0', borderRadius: 8 }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                            <div>
+                              <div style={{ fontWeight: 700, fontSize: 16 }}>{m.name} ({m.percentage_of_budget}%)</div>
+                              <div style={{ fontSize: 13, color: '#475569', marginTop: 4 }}>{m.description}</div>
+                              <div style={{ fontSize: 12, color: '#64748b', marginTop: 4 }}>Due: {new Date(m.due_date).toLocaleDateString()}</div>
+                            </div>
+                            <div>
+                              {m.status === 'released' ? (
+                                <span style={{ padding: '4px 8px', background: '#ecfdf5', color: '#059669', borderRadius: 4, fontSize: 12, fontWeight: 600 }}>
+                                  Released ✓
+                                </span>
+                              ) : (
+                                <button
+                                  className="btn btn-primary btn-sm"
+                                  onClick={() => {
+                                    setSelectedMilestone(m);
+                                    setShowInvoiceModal(true);
+                                  }}
+                                >
+                                  Submit Invoice
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                          {m.status === 'released' && m.release_notes && (
+                            <div style={{ marginTop: 8, fontSize: 12, color: '#059669', fontStyle: 'italic' }}>
+                              Notes: {m.release_notes}
+                            </div>
+                          )}
+                          {m.invoices && m.invoices.length > 0 && (
+                            <div style={{ marginTop: 12 }}>
+                              <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 8, color: '#334155' }}>Submitted Invoices</div>
+                              <table className="app-table" style={{ fontSize: 12 }}>
+                                <thead>
+                                  <tr>
+                                    <th>ID</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Notes</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {m.invoices.map(inv => (
+                                    <tr key={inv.id}>
+                                      <td>#{inv.id}</td>
+                                      <td>₹{inv.amount.toLocaleString('en-IN')}</td>
+                                      <td><StatusBadge status={inv.status} /></td>
+                                      <td>{inv.review_notes || '-'}</td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
               </div>
             )
           )}
@@ -475,27 +629,70 @@ export const StartupDashboard: React.FC = () => {
                   <label className="form-label">Detailed Solution & Deployment Proposal</label>
                   <textarea
                     className="form-textarea"
-                    required
-                    style={{ minHeight: 140 }}
+                    style={{
+                      minHeight: 140,
+                      borderColor: touched.proposal && proposalText.length < 10 ? '#ef4444' : undefined
+                    }}
                     placeholder="Describe your technical architecture, sensor deployment methodology, hardware specifications, and expected reduction in water losses..."
                     value={proposalText}
                     onChange={(e) => setProposalText(e.target.value)}
+                    onBlur={() => setTouched(prev => ({ ...prev, proposal: true }))}
                   />
+                  {touched.proposal && proposalText.length < 10 && (
+                    <div style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>Proposal text is required (min 10 characters)</div>
+                  )}
                 </div>
                 <FileUpload
                   label="Attach Proposal Document (PDF, max 5MB)"
-                  onUploadSuccess={(url) => setAppFileUrl(url)}
+                  onUploadSuccess={(url) => {
+                    setAppFileUrl(url);
+                    setAppFileError('');
+                  }}
                 />
+                {appFileError && <p style={{color:'#ef4444',fontSize:'0.8rem', marginTop:'4px'}}>{appFileError}</p>}
               </div>
               <div className="modal-footer">
                 <button type="button" className="btn btn-secondary" onClick={() => setShowApplyModal(false)}>
                   Cancel
                 </button>
-                <button type="submit" className="btn btn-primary">
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setTouched({ proposal: true });
+                    if (proposalText.length >= 10) {
+                      setShowConfirmModal(true);
+                    }
+                  }}
+                >
                   Submit Proposal
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* CONFIRM MODAL */}
+      {showConfirmModal && selectedChallenge && (
+        <div className="modal-overlay" style={{ zIndex: 1000 }}>
+          <div className="modal-dialog">
+            <div className="modal-header">
+              <h3 className="modal-title">Confirm Submission</h3>
+              <button className="modal-close-btn" onClick={() => setShowConfirmModal(false)}><X size={18} /></button>
+            </div>
+            <div className="modal-body">
+              <p>Are you sure you want to submit your proposal for <strong>{selectedChallenge.title}</strong>? Once submitted, you cannot edit it.</p>
+            </div>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-secondary" onClick={() => setShowConfirmModal(false)}>
+                Cancel
+              </button>
+              <button type="button" className="btn btn-primary" onClick={() => handleApply()}>
+                Yes, Submit
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -516,13 +713,19 @@ export const StartupDashboard: React.FC = () => {
                 <div className="form-group">
                   <label className="form-label">Submitted Value ({selectedKpi.unit})</label>
                   <input
-                    type="number"
+                    type={!isNaN(Number(selectedKpi.target_value)) ? "number" : "text"}
                     step="any"
                     className="form-input"
                     required
                     placeholder={`e.g. ${selectedKpi.target_value}`}
                     value={evidenceValue}
-                    onChange={(e) => setEvidenceValue(parseFloat(e.target.value) || 0)}
+                    onChange={(e) => {
+                      if (!isNaN(Number(selectedKpi.target_value))) {
+                        setEvidenceValue(parseFloat(e.target.value) || 0);
+                      } else {
+                        setEvidenceValue(e.target.value);
+                      }
+                    }}
                   />
                 </div>
                 <div className="form-group">
@@ -552,6 +755,55 @@ export const StartupDashboard: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* SUBMIT INVOICE MODAL */}
+      {showInvoiceModal && selectedMilestone && (
+        <div className="modal-overlay">
+          <div className="modal-dialog">
+            <div className="modal-header">
+              <h3 className="modal-title">Submit Invoice: {selectedMilestone.name}</h3>
+              <button className="modal-close-btn" onClick={() => setShowInvoiceModal(false)}><X size={18} /></button>
+            </div>
+            <form onSubmit={handleSubmitInvoice}>
+              <div className="modal-body">
+                <div className="form-group">
+                  <label className="form-label">Amount (₹)</label>
+                  <input
+                    type="number"
+                    className="form-input"
+                    required
+                    value={invoiceAmount}
+                    onChange={(e) => setInvoiceAmount(Number(e.target.value))}
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Description</label>
+                  <textarea
+                    className="form-textarea"
+                    required
+                    value={invoiceDesc}
+                    onChange={(e) => setInvoiceDesc(e.target.value)}
+                  />
+                </div>
+                <FileUpload
+                  label="Attach Invoice Document (PDF)"
+                  onUploadSuccess={(url) => setInvoiceFileUrl(url)}
+                />
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={() => setShowInvoiceModal(false)}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  Submit Invoice
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      <FileViewerModal fileUrl={viewingFile} onClose={() => setViewingFile(null)} title="Document Viewer" />
     </div>
   );
 };

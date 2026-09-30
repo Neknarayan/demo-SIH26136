@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import Integer, String, Boolean, Text, ForeignKey, DateTime
+from sqlalchemy import Integer, String, Boolean, Text, ForeignKey, DateTime, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import Base
 
@@ -18,6 +18,7 @@ class Challenge(Base):
     status: Mapped[str] = mapped_column(String(50), default="draft", nullable=False)  # draft, published, closed
     department_id: Mapped[int | None] = mapped_column(Integer, ForeignKey("departments.id"), nullable=True)
     deadline: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
     # Relationships
     department = relationship("Department", back_populates="challenges")

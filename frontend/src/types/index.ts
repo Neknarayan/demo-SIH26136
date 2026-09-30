@@ -30,6 +30,9 @@ export interface RegisterPayload {
     sector: string;
     dpiit_status: boolean;
     profile_text: string;
+    msme_reg_no?: string;
+    women_led?: boolean;
+    make_in_india_class?: string | null;
   };
 }
 
@@ -49,6 +52,9 @@ export interface Startup {
   sector: string;
   dpiit_status: boolean;
   profile_text: string;
+  msme_reg_no?: string | null;
+  women_led?: boolean;
+  make_in_india_class?: string | null;
 }
 
 export interface Challenge {
@@ -62,6 +68,7 @@ export interface Challenge {
   required_sector: string;
   dpiit_required: boolean;
   status: 'draft' | 'published' | 'closed';
+  created_at?: string;
 }
 
 export interface Evaluation {
@@ -70,6 +77,7 @@ export interface Evaluation {
   evaluator_id: number;
   score: number;
   notes: string;
+  created_at?: string;
 }
 
 export interface Application {
@@ -81,6 +89,8 @@ export interface Application {
   file_url?: string | null;
   startup?: Startup;
   evaluation?: Evaluation;
+  reference_id?: string;
+  created_at?: string;
 }
 
 export interface KPI {
@@ -119,6 +129,8 @@ export interface Pilot {
   kpis?: KPI[];
   decision?: Decision | null;
   application?: Application;
+  total_budget?: number | null;
+  milestones?: Milestone[];
 }
 
 export interface DecisionSupport {
@@ -158,4 +170,30 @@ export interface AIMatchResponse {
   challenge_title: string;
   recommendations: RecommendationItem[];
   ai_service_online?: boolean;
+}
+
+export interface Milestone {
+  id: number;
+  pilot_id: number;
+  name: string;
+  description: string;
+  percentage_of_budget: number;
+  due_date: string;
+  status: 'pending' | 'released';
+  released_at?: string | null;
+  release_notes?: string | null;
+  invoices: Invoice[];
+}
+
+export interface Invoice {
+  id: number;
+  milestone_id: number;
+  startup_id: number;
+  amount: number;
+  description: string;
+  file_url?: string | null;
+  status: 'pending' | 'approved' | 'rejected';
+  submitted_at: string;
+  reviewed_at?: string | null;
+  review_notes?: string | null;
 }

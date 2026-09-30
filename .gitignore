@@ -6,7 +6,9 @@
 # Databases and Uploads
 *.db
 *.sqlite
-uploads/
+uploads/*
+!uploads/.gitkeep
+
 
 # Python
 __pycache__/

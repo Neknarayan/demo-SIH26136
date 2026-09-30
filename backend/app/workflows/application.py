@@ -1,4 +1,4 @@
-from fastapi import HTTPException, status
+from fastapi import HTTPException
 from app.models.application import Application
 from app.models.user import User
 
@@ -7,7 +7,6 @@ def transition_application(application: Application, target_status: str, user: U
     if current == target_status:
         return
         
-    allowed_roles = []
     
     # Define state machine
     # current -> (target, allowed_roles)

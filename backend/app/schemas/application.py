@@ -1,4 +1,5 @@
-from pydantic import BaseModel, ConfigDict, Field
+from datetime import datetime
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 from app.schemas.startup import StartupResponse
 from app.schemas.evaluation import EvaluationResponse
 
@@ -19,7 +20,15 @@ class ApplicationResponse(BaseModel):
     proposal_text: str
     status: str
     file_url: str | None = None
+    reference_id: str = ''
+    created_at: datetime | None = None
     startup: StartupResponse | None = None
     evaluation: EvaluationResponse | None = None
+
+    @model_validator(mode='after')
+    def compute_reference_id(self):
+        year = self.created_at.year if self.created_at else 2026
+        self.reference_id = f'APP-{year}-{self.id:05d}'
+        return self
 
     model_config = ConfigDict(from_attributes=True)

@@ -10,9 +10,9 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
 
 // Real assets from src/assets/
-import gov1 from '../../assets/gov1.jpeg';
-import gov2 from '../../assets/gov2.png';
-import gov3 from '../../assets/gov3.jpeg';
+import gov1 from '../../assets/gov1.png';
+import gov2 from '../../assets/gov2.jpeg';
+import gov3 from '../../assets/gov3.png';
 
 // ── Slide data types ─────────────────────────────────────────────────────────
 export interface SlideData {

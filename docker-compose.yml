@@ -1,38 +1,65 @@
-version: '3.8'
+# docker-compose.yml — PRODUCTION
+# Usage: docker compose up --build -d
+#
+# Required environment variables (set in .env at project root or via shell):
+#   POSTGRES_PASSWORD   - strong password for database
+#   JWT_SECRET_KEY      - minimum 32-char random secret
+#   CORS_ORIGINS        - comma-separated allowed origins (e.g. https://yoursite.com)
+
+version: '3.9'
 
 services:
   db:
-    image: postgres:15
+    image: postgres:15-alpine
+    restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: sih26136
-    ports:
-      - "5432:5432"
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      POSTGRES_DB: sih_db
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    # Health check so backend waits for DB to be truly ready
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d sih_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
 
   backend:
-    build: ./backend
-    ports:
-      - "8000:8000"
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
     environment:
-      - DATABASE_URL=postgresql+psycopg://postgres:password@db:5432/sih26136
-      - DEMO_MODE=false
-      - JWT_SECRET=super_secret_production_key_123!
-    depends_on:
-      - db
+      DATABASE_URL: postgresql+psycopg://postgres:${POSTGRES_PASSWORD}@db:5432/sih_db
+      APP_ENV: production
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:?JWT_SECRET_KEY is required (min 32 chars)}
+      ACCESS_TOKEN_EXPIRE_MINUTES: 60
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost}
+      DEMO_MODE: "false"
     volumes:
-      - ./backend/uploads:/app/uploads
+      # Persistent uploads volume — survives container restarts
+      - uploads_data:/app/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    expose:
+      - "8000"
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        # /api is the nginx proxy path — NOT localhost:8000
+        VITE_API_URL: /api
+    restart: unless-stopped
     ports:
       - "80:80"
-    environment:
-      - VITE_API_URL=http://localhost:8000
     depends_on:
       - backend
 
 volumes:
   postgres_data:
+  uploads_data:

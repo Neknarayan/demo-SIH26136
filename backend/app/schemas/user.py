@@ -22,6 +22,9 @@ class StartupProfile(BaseModel):
     sector: str
     dpiit_status: bool = False
     profile_text: str
+    msme_reg_no: Optional[str] = None
+    women_led: bool = False
+    make_in_india_class: Optional[str] = None
 
 class OfficerProfile(BaseModel):
     """Extra fields for government officer registration."""

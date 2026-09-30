@@ -26,8 +26,9 @@ export const FileUpload: React.FC<FileUploadProps> = ({
       const selectedFile = e.target.files[0];
       
       // Validate Size
-      if (selectedFile.size > maxSizeMB * 1024 * 1024) {
-        setError(`File exceeds the ${maxSizeMB}MB limit.`);
+      if (selectedFile.size > 5 * 1024 * 1024) {
+        alert("File exceeds 5MB limit");
+        e.target.value = '';
         return;
       }
 

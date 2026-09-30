@@ -1,3 +1,4 @@
+from datetime import datetime
 from pydantic import BaseModel, ConfigDict, Field
 
 class EvaluationBase(BaseModel):
@@ -11,5 +12,6 @@ class EvaluationCreate(EvaluationBase):
 class EvaluationResponse(EvaluationBase):
     id: int
     evaluator_id: int
+    created_at: datetime | None = None
 
     model_config = ConfigDict(from_attributes=True)

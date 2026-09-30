@@ -2,6 +2,8 @@ from datetime import date
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 from app.schemas.kpi import KPIResponse
 from app.schemas.decision import DecisionResponse
+from decimal import Decimal
+from app.schemas.milestone import MilestoneResponse
 
 class PilotBase(BaseModel):
     scope: str = Field(..., min_length=5)
@@ -16,13 +18,15 @@ class PilotBase(BaseModel):
 
 class PilotCreate(PilotBase):
     application_id: int
+    total_budget: Decimal | None = None
 
-from typing import Any
 class PilotResponse(PilotBase):
     id: int
     application_id: int
     status: str
+    total_budget: Decimal | None = None
     kpis: list[KPIResponse] = []
+    milestones: list[MilestoneResponse] = []
     decision: DecisionResponse | None = None
     application: dict | None = None
 
@@ -42,6 +46,7 @@ class PilotResponse(PilotBase):
                 # Convert ORM to dict to avoid mutating ORM state
                 d = {c.name: getattr(values, c.name) for c in values.__table__.columns}
                 d["kpis"] = getattr(values, "kpis", [])
+                d["milestones"] = getattr(values, "milestones", [])
                 d["decision"] = getattr(values, "decision", None)
                 d["application"] = app_dict
                 return d

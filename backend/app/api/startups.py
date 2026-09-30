@@ -6,7 +6,7 @@ from app.models.challenge import Challenge
 from app.models.user import User
 from app.schemas.startup import StartupCreate, StartupResponse
 from app.auth import get_current_user, require_role
-from app.services.matching import check_informational_eligibility, EligibilityMatchResult
+from app.services.matching import check_informational_eligibility
 
 router = APIRouter(prefix="/startups", tags=["Startups"])
 
