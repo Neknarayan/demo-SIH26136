@@ -1,4 +1,4 @@
-# SIH 26136 — Challenge-to-Pilot Lifecycle Platform
+#SIH 26136 — Challenge-to-Pilot Lifecycle Platform
 
 A demo-ready MVP enabling an end-to-end innovation procurement and pilot deployment lifecycle between Government Officers, Startups, and Evaluators.
 
